@@ -787,7 +787,7 @@ function openModal(ex){
   const l2=d3.line().x(d=>x(d.date)).y(d=>y(d.max1rm)).curve(d3.curveMonotoneX);
   svg.append('path').datum(bd).attr('fill','none').attr('stroke',color).attr('stroke-width',2.5).attr('d',l2);
   // PR dots in modal
-  let runMax=0;bd.forEach(d=>{const isPR=d.max1rm>runMax&&runMax>0;if(d.max1rm>runMax)runMax=d.max1rm;svg.append('circle').attr('cx',x(d.date)).attr('cy',y(d.max1rm)).attr('r',isPR?7:5).attr('fill',isPR?GOLD:color).attr('stroke',isPR?'#fff':'none').attr('stroke-width',isPR?1.5:0);if(isPR)svg.append('text').attr('x',x(d.date)).attr('y',y(d.max1rm)-10).attr('text-anchor','middle').attr('font-size',11).attr('fill',GOLD).text('⭐');});
+  let runMax=0;bd.forEach(d=>{const isPR=d.max1rm>runMax&&runMax>0;if(d.max1rm>runMax)runMax=d.max1rm;svg.append('circle').attr('cx',x(d.date)).attr('cy',y(d.max1rm)).attr('r',isPR?7:5).attr('fill',isPR?GOLD:color).attr('stroke',isPR?'#fff':'none').attr('stroke-width',isPR?1.5:0).style('cursor','crosshair').on('mousemove',(e)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Max 1RM: ${d.max1rm.toFixed(0)} lbs<br>Set 1: ${d.s1?.toFixed(0)} lbs<br>Set 2: ${d.s2?.toFixed(0)} lbs${isPR?'<br><span style="color:#ffd700">⭐ Personal Record</span>':''}`,e)).on('mouseleave',hideTip);if(isPR)svg.append('text').attr('x',x(d.date)).attr('y',y(d.max1rm)-10).attr('text-anchor','middle').attr('font-size',11).attr('fill',GOLD).text('⭐');});
   document.getElementById('modal-overlay').classList.add('open');
 }
 
