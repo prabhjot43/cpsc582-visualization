@@ -177,6 +177,12 @@
       border: 1px solid #21262d;
       border-radius: 6px;
       padding: 8px;
+      cursor: pointer;
+      transition: border-color .2s, transform .15s;
+    }
+    .sm-panel:hover {
+      border-color: #4fc3f7;
+      transform: scale(1.03);
     }
     .sm-title {
       font-size: 9px;
@@ -233,6 +239,49 @@
     }
 
     svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-overlay.open { display: flex; }
+    #modal-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 700px;
+      width: 90vw;
+      position: relative;
+    }
+    #modal-close {
+      position: absolute;
+      top: 12px; right: 16px;
+      background: none;
+      border: none;
+      color: #8b949e;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #modal-close:hover { color: #e6edf3; }
+    #modal-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e6edf3;
+      margin-bottom: 4px;
+    }
+    #modal-pct {
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    #modal-svg-wrap svg { width: 100%; height: auto; }
 
     /* ── Footer ── */
     footer {
@@ -339,6 +388,16 @@
 
 <div class="tooltip" id="tooltip"></div>
 
+<!-- Modal for enlarged panel -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <button id="modal-close">×</button>
+    <div id="modal-title"></div>
+    <div id="modal-pct"></div>
+    <div id="modal-svg-wrap"></div>
+  </div>
+</div>
+
 <script>
 const UPPER = '#4fc3f7';
 const LOWER = '#81c784';
@@ -444,17 +503,28 @@ d3.json('data.json').then(raw => {
       .attr('x', -(smH/2))
       .attr('y', 10)
       .attr('text-anchor','middle')
-      .attr('fill','#484f58')
+      .attr('fill','#8b949e')
       .attr('font-size', 7)
       .text('Est. 1RM (lbs)');
 
-    // error bars (set1-set2 range)
+    // error bars (set1-set2 range) — brighter and thicker
     byDate.forEach(d => {
       if (d.s1 && d.s2) {
+        // cap top
+        svg.append('line')
+          .attr('x1', xScale(d.date)-3).attr('x2', xScale(d.date)+3)
+          .attr('y1', yScale(d.s1)).attr('y2', yScale(d.s1))
+          .attr('stroke','#aaaaaa').attr('stroke-width', 1);
+        // main bar
         svg.append('line')
           .attr('x1', xScale(d.date)).attr('x2', xScale(d.date))
           .attr('y1', yScale(d.s1)).attr('y2', yScale(d.s2))
-          .attr('stroke','#555').attr('stroke-width', 1.5);
+          .attr('stroke','#aaaaaa').attr('stroke-width', 1.5).attr('opacity', 0.8);
+        // cap bottom
+        svg.append('line')
+          .attr('x1', xScale(d.date)-3).attr('x2', xScale(d.date)+3)
+          .attr('y1', yScale(d.s2)).attr('y2', yScale(d.s2))
+          .attr('stroke','#aaaaaa').attr('stroke-width', 1);
       }
     });
 
@@ -476,8 +546,86 @@ d3.json('data.json').then(raw => {
       .attr('cx', d => xScale(d.date)).attr('cy', d => yScale(d.max1rm))
       .attr('r', 2.5).attr('fill', color)
       .on('mousemove', (event, d) => showTip(
-        `<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Max 1RM: ${d.max1rm.toFixed(0)} lbs`, event))
+        `<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Max 1RM: ${d.max1rm.toFixed(0)} lbs<br>Set1: ${d.s1?.toFixed(0)} / Set2: ${d.s2?.toFixed(0)} lbs`, event))
       .on('mouseleave', hideTip);
+
+    // click to enlarge
+    panel.on('click', () => openModal(ex, byDate, color, slope, intercept, pct, pctColor));
+  });
+
+  // ── Modal logic ────────────────────────────────────────────────────────────
+  function openModal(ex, byDate, color, slope, intercept, pct, pctColor) {
+    const overlay = document.getElementById('modal-overlay');
+    const wrap    = document.getElementById('modal-svg-wrap');
+    document.getElementById('modal-title').textContent = ex;
+    document.getElementById('modal-pct').innerHTML =
+      `<span style="color:${pctColor};font-weight:700">${+pct>=0?'+':''}${pct}%</span> overall gain`;
+    wrap.innerHTML = '';
+
+    const mW = 600, mH = 300;
+    const mM = { top: 20, right: 20, bottom: 40, left: 60 };
+
+    const xScale = d3.scaleTime().domain(d3.extent(byDate, d => d.date)).range([mM.left, mW-mM.right]);
+    const yScale = d3.scaleLinear()
+      .domain([d3.min(byDate, d => Math.min(d.s1||d.max1rm, d.s2||d.max1rm)) * 0.96,
+               d3.max(byDate, d => d.max1rm) * 1.04])
+      .range([mH-mM.bottom, mM.top]);
+
+    const svg = d3.select(wrap).append('svg').attr('viewBox', `0 0 ${mW} ${mH}`);
+
+    // gridlines
+    svg.append('g').attr('transform',`translate(${mM.left},0)`)
+      .call(d3.axisLeft(yScale).ticks(5).tickSize(-(mW-mM.left-mM.right)))
+      .call(g => g.select('.domain').remove())
+      .call(g => g.selectAll('.tick line').attr('stroke','#21262d'))
+      .call(g => g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',11));
+
+    svg.append('g').attr('transform',`translate(0,${mH-mM.bottom})`)
+      .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.timeFormat('%b %d')))
+      .call(g => g.select('.domain').attr('stroke','#30363d'))
+      .call(g => g.selectAll('text').attr('fill','#8b949e').attr('font-size',11));
+
+    // axis labels
+    svg.append('text').attr('transform','rotate(-90)').attr('x',-(mH/2)).attr('y',18)
+      .attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Est. 1RM (lbs)');
+    svg.append('text').attr('x',mW/2).attr('y',mH-4).attr('text-anchor','middle')
+      .attr('fill','#8b949e').attr('font-size',11).text('Date');
+
+    // error bars
+    byDate.forEach(d => {
+      if (d.s1 && d.s2) {
+        svg.append('line').attr('x1',xScale(d.date)-5).attr('x2',xScale(d.date)+5)
+          .attr('y1',yScale(d.s1)).attr('y2',yScale(d.s1)).attr('stroke','#aaa').attr('stroke-width',1.5);
+        svg.append('line').attr('x1',xScale(d.date)).attr('x2',xScale(d.date))
+          .attr('y1',yScale(d.s1)).attr('y2',yScale(d.s2)).attr('stroke','#aaa').attr('stroke-width',2);
+        svg.append('line').attr('x1',xScale(d.date)-5).attr('x2',xScale(d.date)+5)
+          .attr('y1',yScale(d.s2)).attr('y2',yScale(d.s2)).attr('stroke','#aaa').attr('stroke-width',1.5);
+      }
+    });
+
+    // trend line
+    svg.append('line')
+      .attr('x1',xScale(byDate[0].date)).attr('x2',xScale(byDate[byDate.length-1].date))
+      .attr('y1',yScale(intercept)).attr('y2',yScale(slope*(byDate.length-1)+intercept))
+      .attr('stroke',ORANGE).attr('stroke-width',1.5).attr('stroke-dasharray','5,3').attr('opacity',0.9);
+
+    // line
+    const line2 = d3.line().x(d => xScale(d.date)).y(d => yScale(d.max1rm)).curve(d3.curveMonotoneX);
+    svg.append('path').datum(byDate).attr('fill','none').attr('stroke',color).attr('stroke-width',2.5).attr('d',line2);
+
+    // dots
+    svg.selectAll('circle').data(byDate).join('circle')
+      .attr('cx', d => xScale(d.date)).attr('cy', d => yScale(d.max1rm))
+      .attr('r', 5).attr('fill', color);
+
+    overlay.classList.add('open');
+  }
+
+  document.getElementById('modal-close').addEventListener('click', () =>
+    document.getElementById('modal-overlay').classList.remove('open'));
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay'))
+      document.getElementById('modal-overlay').classList.remove('open');
   });
 
   // ── CHART 2: Fatigue (Set 1 vs Set 2) ─────────────────────────────────────
