@@ -8,68 +8,109 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;}
-    nav{position:sticky;top:0;background:rgba(13,17,23,0.96);backdrop-filter:blur(8px);border-bottom:1px solid #30363d;padding:12px 40px;display:flex;gap:24px;z-index:200;align-items:center;}
+    nav{position:sticky;top:0;background:rgba(13,17,23,0.96);backdrop-filter:blur(8px);border-bottom:1px solid #30363d;padding:12px 40px;display:flex;gap:22px;z-index:200;align-items:center;flex-wrap:wrap;}
     nav a{color:#8b949e;text-decoration:none;font-size:13px;font-weight:500;transition:color .2s;}
     nav a:hover,nav a.active{color:#4fc3f7;}
-    #hero{text-align:center;padding:100px 40px 60px;max-width:1100px;margin:0 auto;}
+    #hero{text-align:center;padding:90px 40px 60px;max-width:1100px;margin:0 auto;}
     #hero h1{font-size:2.8rem;font-weight:700;background:linear-gradient(135deg,#4fc3f7,#81c784);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px;}
-    #hero p{font-size:1.05rem;color:#8b949e;max-width:600px;margin:0 auto 32px;}
-    .stat-row{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:32px;}
-    .stat-box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:18px 28px;text-align:center;}
-    .stat-box .num{font-size:1.9rem;font-weight:700;color:#4fc3f7;}
-    .stat-box .label{font-size:11px;color:#8b949e;margin-top:4px;}
+    #hero p{font-size:1.05rem;color:#8b949e;max-width:620px;margin:0 auto 32px;}
+    .stat-row{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin-top:28px;}
+    .stat-box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px 26px;text-align:center;}
+    .stat-box .num{font-size:1.8rem;font-weight:700;color:#4fc3f7;}
+    .stat-box .label{font-size:11px;color:#8b949e;margin-top:3px;}
     section{max-width:1150px;margin:0 auto;padding:70px 40px;border-bottom:1px solid #21262d;}
     .section-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#4fc3f7;margin-bottom:8px;}
     h2{font-size:1.7rem;font-weight:700;margin-bottom:10px;color:#e6edf3;}
-    .section-desc{color:#8b949e;max-width:720px;margin-bottom:32px;font-size:.93rem;}
-    .chart-wrap{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:22px;margin-bottom:20px;overflow-x:auto;}
+    .section-desc{color:#8b949e;max-width:720px;margin-bottom:28px;font-size:.92rem;}
+    .chart-wrap{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:22px;margin-bottom:18px;overflow-x:auto;}
     .chart-title{font-size:12px;font-weight:600;color:#8b949e;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;}
-    .insight-box{background:#0d1117;border-left:3px solid #4fc3f7;border-radius:0 6px 6px 0;padding:14px 18px;margin-top:16px;font-size:13px;color:#8b949e;}
+    .insight-box{background:#0d1117;border-left:3px solid #4fc3f7;border-radius:0 6px 6px 0;padding:13px 18px;margin-top:14px;font-size:13px;color:#8b949e;}
     .insight-box strong{color:#e6edf3;}
-    .legend{display:flex;gap:18px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+    .legend{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
     .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#8b949e;}
     .legend-dot{width:10px;height:10px;border-radius:50%;}
-    .btn-group{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+    .btn-group{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
     .btn{padding:6px 14px;border-radius:6px;border:1px solid #30363d;background:#161b22;color:#8b949e;font-size:12px;cursor:pointer;transition:all .2s;}
     .btn:hover,.btn.active{background:#4fc3f7;color:#0d1117;border-color:#4fc3f7;font-weight:600;}
-    .btn.lower-active{background:#81c784!important;border-color:#81c784!important;}
+    .btn.lower-a{background:#81c784!important;border-color:#81c784!important;color:#0d1117!important;}
+
+    /* SMALL MULTIPLES */
     #sm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
-    .sm-panel{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:8px;cursor:pointer;transition:border-color .18s,transform .15s,box-shadow .18s;}
+    .sm-panel{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:8px;cursor:pointer;transition:border-color .18s,transform .15s,box-shadow .18s;position:relative;}
     .sm-panel:hover{border-color:#4fc3f7;transform:scale(1.04);box-shadow:0 0 12px rgba(79,195,247,0.2);}
     .sm-panel.selected{border-color:#ff9800!important;box-shadow:0 0 14px rgba(255,152,0,0.35)!important;}
     .sm-panel.hidden{display:none;}
-    .sm-title{font-size:9px;color:#8b949e;text-align:center;margin-bottom:3px;line-height:1.3;}
-    .sm-pct{font-size:11px;font-weight:700;text-align:center;margin-bottom:3px;}
+    .sm-title{font-size:9px;color:#8b949e;text-align:center;margin-bottom:2px;line-height:1.3;}
+    .sm-pct{font-size:11px;font-weight:700;text-align:center;margin-bottom:2px;}
     .sm-hint{font-size:8px;color:#484f58;text-align:center;margin-top:2px;}
-    #summary-card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px 20px;margin-bottom:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+    .pr-badge{position:absolute;top:4px;right:4px;background:#ffd700;color:#0d1117;font-size:8px;font-weight:700;border-radius:3px;padding:1px 4px;}
+
+    /* SUMMARY CARD */
+    #summary-card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px;margin-bottom:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
     .sc-item{text-align:center;}
-    .sc-val{font-size:1.3rem;font-weight:700;}
-    .sc-label{font-size:11px;color:#8b949e;margin-top:2px;}
+    .sc-val{font-size:1.25rem;font-weight:700;}
+    .sc-label{font-size:10px;color:#8b949e;margin-top:2px;}
+
+    /* REPLAY CONTROLS */
+    #replay-controls{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+    #play-btn{padding:8px 20px;border-radius:8px;border:none;background:#4fc3f7;color:#0d1117;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+    #play-btn:hover{background:#81c784;}
+    #replay-label{font-size:13px;color:#8b949e;}
+    #session-slider{flex:1;min-width:120px;accent-color:#4fc3f7;}
+    #speed-select{padding:5px 10px;border-radius:6px;border:1px solid #30363d;background:#161b22;color:#8b949e;font-size:12px;cursor:pointer;}
+
+    /* WHAT-IF */
+    #whatif-wrap{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:18px;margin-bottom:18px;}
+    .wi-row{display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;}
+    .wi-label{font-size:12px;color:#8b949e;min-width:120px;}
+    #weeks-ahead-slider{flex:1;min-width:100px;accent-color:#ff9800;}
+    #wi-result{font-size:14px;font-weight:600;color:#ff9800;}
+
+    /* COMPARISON */
+    #compare-selects{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+    .compare-select{padding:6px 12px;border-radius:6px;border:1px solid #30363d;background:#161b22;color:#e6edf3;font-size:12px;cursor:pointer;}
+    #compare-chart{min-height:260px;}
+
+    /* TOOLTIP */
     .tooltip{position:fixed;background:#21262d;border:1px solid #30363d;border-radius:6px;padding:10px 14px;font-size:12px;color:#e6edf3;pointer-events:none;opacity:0;transition:opacity .15s;z-index:999;max-width:220px;line-height:1.5;}
+
+    /* MODAL */
     #modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;align-items:center;justify-content:center;}
     #modal-overlay.open{display:flex;}
     #modal-box{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;max-width:720px;width:92vw;position:relative;}
-    #modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:#8b949e;font-size:24px;cursor:pointer;line-height:1;}
+    #modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:#8b949e;font-size:24px;cursor:pointer;}
     #modal-close:hover{color:#e6edf3;}
     #modal-title{font-size:16px;font-weight:700;color:#e6edf3;}
     #modal-sub{font-size:12px;color:#8b949e;margin-top:3px;margin-bottom:14px;}
     #modal-svg-wrap svg{width:100%;height:auto;}
+
+    /* PR FEED */
+    #pr-feed{max-height:200px;overflow-y:auto;margin-top:10px;}
+    .pr-item{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid #21262d;font-size:12px;}
+    .pr-star{color:#ffd700;font-size:14px;}
+    .pr-ex{color:#e6edf3;font-weight:600;flex:1;}
+    .pr-val{color:#4fc3f7;}
+    .pr-date{color:#484f58;font-size:11px;}
+
     svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
     footer{text-align:center;padding:40px;color:#484f58;font-size:12px;}
-    @media(max-width:800px){#sm-grid{grid-template-columns:repeat(3,1fr);}#summary-card{grid-template-columns:repeat(2,1fr);}h1{font-size:2rem!important;}nav{padding:10px 16px;gap:14px;}section{padding:50px 16px;}}
+    @media(max-width:800px){#sm-grid{grid-template-columns:repeat(3,1fr);}#summary-card{grid-template-columns:repeat(2,1fr);}h1{font-size:2rem!important;}nav{padding:10px 14px;gap:12px;}section{padding:50px 16px;}}
   </style>
 </head>
 <body>
 
 <nav id="nav">
   <a href="#hero">Overview</a>
+  <a href="#section-replay">▶ Replay</a>
   <a href="#section-progression">Progression</a>
   <a href="#section-fatigue">Fatigue</a>
-  <a href="#section-effort">Effort & Volume</a>
-  <a href="#section-ranking">Rankings</a>
+  <a href="#section-whatif">What-If</a>
+  <a href="#section-compare">Compare</a>
+  <a href="#section-effort">Effort</a>
   <a href="#section-heatmap">Heatmap</a>
 </nav>
 
+<!-- HERO -->
 <div id="hero">
   <div class="section-label">CPSC 582 · Personal Dataset · W2026</div>
   <h1>7 Weeks of Strength Training</h1>
@@ -77,36 +118,65 @@
   <div class="stat-row" id="stats"></div>
 </div>
 
+<!-- ANIMATED REPLAY -->
+<section id="section-replay">
+  <div class="section-label">FEATURE 1 — ANIMATED REPLAY</div>
+  <h2>Watch your training unfold in real time</h2>
+  <p class="section-desc">Hit play to animate all 13 exercises simultaneously, session by session. Gold stars mark personal records. Use the slider to scrub to any session manually.</p>
+  <div id="replay-controls">
+    <button id="play-btn" onclick="togglePlay()">▶ Play</button>
+    <span id="replay-label">Session 1 of 26</span>
+    <input type="range" id="session-slider" min="0" max="25" value="0" oninput="scrubTo(+this.value)"/>
+    <select id="speed-select" onchange="setSpeed(+this.value)">
+      <option value="800">Slow</option>
+      <option value="400" selected>Normal</option>
+      <option value="150">Fast</option>
+    </select>
+  </div>
+  <div class="chart-wrap">
+    <div id="sm-grid-replay"></div>
+  </div>
+  <!-- PR Feed -->
+  <div class="chart-wrap" style="margin-top:0">
+    <div class="chart-title">🏆 Personal Records Detected</div>
+    <div id="pr-feed"></div>
+  </div>
+  <div class="insight-box"><strong>How to use:</strong> Hit play and watch all 13 exercises update simultaneously. Gold ⭐ badges appear when a new personal record is set. Scrub back and forth with the slider to compare any two moments in your training.</div>
+</section>
+
+<!-- PROGRESSION SMALL MULTIPLES -->
 <section id="section-progression">
   <div class="section-label">DESIGN CHALLENGE 1</div>
   <h2>How did each exercise progress over 7 weeks?</h2>
-  <p class="section-desc">Each panel shows estimated 1RM per session with an independent y-axis. Error bars show the Set 1 vs Set 2 range. <strong style="color:#ff9800">Click any panel</strong> to explore it in detail — the fatigue chart below updates automatically.</p>
-  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
+  <p class="section-desc">Full 7-week view with error bars and trend lines. <strong style="color:#ff9800">Click any panel</strong> to link it to the fatigue explorer below. Double-click to enlarge.</p>
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;">
     <div class="btn-group" style="margin-bottom:0">
       <button class="btn active" id="filter-all" onclick="filterPanels('all')">All</button>
       <button class="btn" id="filter-upper" onclick="filterPanels('upper')">Upper Body</button>
       <button class="btn" id="filter-lower" onclick="filterPanels('lower')">Lower Body</button>
     </div>
     <div class="legend" style="margin-bottom:0">
-      <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7"></div>Upper Body</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#81c784"></div>Lower Body</div>
-      <div class="legend-item"><span style="color:#ff9800;font-size:13px;letter-spacing:-1px">- -</span>&nbsp;Trend</div>
-      <div class="legend-item"><span style="color:#aaa">⌶</span>&nbsp;Set 1→2 error bar</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7"></div>Upper</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#81c784"></div>Lower</div>
+      <div class="legend-item"><span style="color:#ff9800;font-size:12px">---</span> Trend</div>
+      <div class="legend-item"><span style="color:#aaa">⌶</span> S1→S2 error bar</div>
+      <div class="legend-item"><span style="color:#ffd700">⭐</span> PR</div>
     </div>
   </div>
   <div class="chart-wrap"><div id="sm-grid"></div></div>
-  <div class="insight-box"><strong>Key finding:</strong> Accessory exercises averaged <strong>+22.1%</strong> vs <strong>+9.7%</strong> for compounds. Cable Chest Fly led at <strong>+41%</strong>. Click any panel to explore that exercise's fatigue pattern.</div>
+  <div class="insight-box"><strong>Key finding:</strong> Accessory exercises averaged <strong>+22.1%</strong> vs <strong>+9.7%</strong> for compounds. Cable Chest Fly led at <strong>+41%</strong>.</div>
 </section>
 
+<!-- FATIGUE EXPLORER -->
 <section id="section-fatigue">
   <div class="section-label">DESIGN CHALLENGE 2</div>
-  <h2>How does fatigue show up within each session?</h2>
-  <p class="section-desc">Select an exercise using the buttons or by clicking a panel above. The shaded area shows strength lost between Set 1 and Set 2. Dashed vertical lines mark each weight increase.</p>
+  <h2>Fatigue Explorer</h2>
+  <p class="section-desc">Click any panel above or select below. The summary card updates automatically. Dashed lines mark weight increases.</p>
   <div id="summary-card">
     <div class="sc-item"><div class="sc-val" id="sc-gain" style="color:#81c784">—</div><div class="sc-label">Total Gain</div></div>
     <div class="sc-item"><div class="sc-val" id="sc-fatigue" style="color:#ff9800">—</div><div class="sc-label">Avg Rep Drop</div></div>
     <div class="sc-item"><div class="sc-val" id="sc-peak" style="color:#4fc3f7">—</div><div class="sc-label">Peak 1RM</div></div>
-    <div class="sc-item"><div class="sc-val" id="sc-type" style="color:#4fc3f7">—</div><div class="sc-label">Workout Type</div></div>
+    <div class="sc-item"><div class="sc-val" id="sc-prs" style="color:#ffd700">—</div><div class="sc-label">PRs Set</div></div>
   </div>
   <div class="btn-group" id="exercise-btns"></div>
   <div class="chart-wrap">
@@ -114,39 +184,74 @@
     <div id="fatigue-chart"></div>
   </div>
   <div class="chart-wrap">
-    <div class="chart-title">Average Rep Drop Set 1 → Set 2 (click a bar to explore)</div>
+    <div class="chart-title">Average Rep Drop Set 1 → Set 2 (click a bar to switch exercise)</div>
     <div id="rep-drop-chart"></div>
   </div>
   <div class="insight-box"><strong>Key finding:</strong> Bench Press and Bicep Curl show the steepest fatigue at <strong>1.69 reps</strong> average drop. Every weight increase causes an immediate 1RM dip before recovering.</div>
 </section>
 
+<!-- WHAT-IF SIMULATOR -->
+<section id="section-whatif">
+  <div class="section-label">FEATURE 2 — WHAT-IF SIMULATOR</div>
+  <h2>If your trend continues… what could you lift?</h2>
+  <p class="section-desc">Project any exercise's estimated 1RM forward in time using your current trend line. Adjust the number of weeks to see different scenarios.</p>
+  <div id="whatif-wrap">
+    <div class="wi-row">
+      <span class="wi-label">Exercise:</span>
+      <select class="compare-select" id="wi-exercise-select" onchange="updateWhatIf()"></select>
+    </div>
+    <div class="wi-row">
+      <span class="wi-label">Weeks ahead:</span>
+      <input type="range" id="weeks-ahead-slider" min="1" max="24" value="4" oninput="updateWhatIf()"/>
+      <span id="wi-weeks-label" style="color:#ff9800;font-weight:600;min-width:60px;">4 weeks</span>
+    </div>
+    <div id="wi-result">—</div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title" id="whatif-title">Projection Chart</div>
+    <div id="whatif-chart"></div>
+  </div>
+  <div class="insight-box"><strong>Note:</strong> Projections assume your linear trend continues unchanged. Real-world strength gains slow down over time — treat this as an optimistic upper bound, not a guarantee.</div>
+</section>
+
+<!-- COMPARISON MODE -->
+<section id="section-compare">
+  <div class="section-label">FEATURE 3 — EXERCISE COMPARISON</div>
+  <h2>Compare any two exercises side by side</h2>
+  <p class="section-desc">Select two exercises to overlay their normalized progression (% change from Week 1) on the same chart. Hover for exact values.</p>
+  <div id="compare-selects">
+    <select class="compare-select" id="compare-ex1" onchange="updateComparison()"></select>
+    <span style="color:#8b949e;font-size:14px">vs</span>
+    <select class="compare-select" id="compare-ex2" onchange="updateComparison()"></select>
+    <button class="btn" onclick="swapComparison()" style="margin-bottom:0">⇄ Swap</button>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title" id="compare-title">Normalized Progression Comparison</div>
+    <div id="compare-chart"></div>
+  </div>
+  <div class="insight-box"><strong>Tip:</strong> Try comparing a compound lift like Bench Press with an accessory like Cable Chest Fly to see how differently they respond over the same 7 weeks.</div>
+</section>
+
+<!-- EFFORT & VOLUME -->
 <section id="section-effort">
-  <div class="section-label">DESIGN CHALLENGE 3 · PANEL B</div>
+  <div class="section-label">DESIGN CHALLENGE 3</div>
   <h2>Did effort and volume move together?</h2>
-  <p class="section-desc">Weekly average RPE overlaid against total training volume. Error bars show the full spread of RPE values within each week — not just the average.</p>
+  <p class="section-desc">Weekly average RPE overlaid against total training volume. Error bars show the full RPE spread within each week.</p>
   <div class="chart-wrap"><div id="rpe-volume-chart"></div></div>
-  <div class="insight-box"><strong>Key finding:</strong> Volume stabilized around <strong>42,600 lbs/week</strong> by Week 3. RPE climbed from <strong>7.58 → 8.65</strong> — the same workload felt progressively harder each week.</div>
+  <div class="insight-box"><strong>Key finding:</strong> Volume stabilized around <strong>42,600 lbs/week</strong> by Week 3. RPE climbed from <strong>7.58 → 8.65</strong> — same workload, progressively harder.</div>
 </section>
 
-<section id="section-ranking">
-  <div class="section-label">DESIGN CHALLENGE 3 · PANEL A</div>
-  <h2>Which exercises improved the most?</h2>
-  <p class="section-desc">Overall % 1RM gain ranked from first to last session. Click any bar or label to explore that exercise's fatigue pattern.</p>
-  <div class="chart-wrap"><div id="ranking-chart"></div></div>
-  <div class="insight-box"><strong>Key finding:</strong> Accessory exercises dominate the top of the rankings. Compound lifts cluster at the bottom — not because they failed, but because they were already near capacity.</div>
-</section>
-
+<!-- HEATMAP -->
 <section id="section-heatmap">
-  <div class="section-label">DESIGN CHALLENGE 3 · PANEL C</div>
+  <div class="section-label">DESIGN CHALLENGE 3 · HEATMAP</div>
   <h2>When were the gains actually happening?</h2>
-  <p class="section-desc">Each cell shows % change in estimated 1RM relative to Week 1. Green = gaining, red = stalled. Hover for details. Click any cell or exercise label to explore its fatigue pattern.</p>
+  <p class="section-desc">% change from Week 1 per exercise per week. Click any cell to jump to that exercise's fatigue chart.</p>
   <div class="chart-wrap"><div id="heatmap-chart"></div></div>
   <div class="insight-box"><strong>Key finding:</strong> Most gains concentrated in Weeks 2–3. By Weeks 5–7 progress clearly slowed across most exercises.</div>
 </section>
 
 <footer>CPSC 582 W2026 · Personal Strength Training Dataset · Jan 22 – Mar 6, 2026</footer>
 <div class="tooltip" id="tooltip"></div>
-
 <div id="modal-overlay">
   <div id="modal-box">
     <button id="modal-close">×</button>
@@ -157,31 +262,125 @@
 </div>
 
 <script>
-const UPPER='#4fc3f7',LOWER='#81c784',ORANGE='#ff9800',RED='#f85149';
+const UPPER='#4fc3f7',LOWER='#81c784',ORANGE='#ff9800',RED='#f85149',GOLD='#ffd700';
 const tooltip=d3.select('#tooltip');
 let activeEx='Bench Press',rawData=[],exercises=[],wtypeMap={},allByDate={},panelData={};
+let allDates=[],replayIdx=0,replayTimer=null,replaySpeed=400,isPlaying=false;
+let prLog={}; // {exercise: max1rm seen so far}
 
 function showTip(html,e){tooltip.html(html).style('opacity',1).style('left',(e.clientX+14)+'px').style('top',(e.clientY-28)+'px');}
 function hideTip(){tooltip.style('opacity',0);}
 function linReg(x,y){const n=x.length,sx=d3.sum(x),sy=d3.sum(y),sxy=d3.sum(x.map((xi,i)=>xi*y[i])),sx2=d3.sum(x.map(xi=>xi*xi)),s=(n*sxy-sx*sy)/(n*sx2-sx*sx);return[s,(sy-s*sx)/n];}
 
+// ── Load ─────────────────────────────────────────────────────────────────────
 d3.json('data.json').then(raw=>{
   const pd=d3.timeParse('%Y-%m-%d');
   raw.forEach(d=>{d.date=pd(d.Date);d.week=+d['Week Number'];d.set=+d['Set Number'];d.w=+d['Weight (lbs)'];d.reps=+d.Repetitions;d.rpe=+d.RPE;d.e1rm=+d['Estimated 1RM'];d.vol=+d['Set Volume'];});
-  rawData=raw;exercises=[...new Set(raw.map(d=>d.Exercise))].sort();
+  rawData=raw; exercises=[...new Set(raw.map(d=>d.Exercise))].sort();
   raw.forEach(d=>wtypeMap[d.Exercise]=d['Workout Type']);
+  allDates=[...new Set(raw.map(d=>d.Date))].sort();
   exercises.forEach(ex=>{
     const ed=raw.filter(d=>d.Exercise===ex);
-    allByDate[ex]=d3.rollups(ed,v=>({max1rm:d3.max(v,d=>d.e1rm),s1:d3.mean(v.filter(d=>d.set===1),d=>d.e1rm),s2:d3.mean(v.filter(d=>d.set===2),d=>d.e1rm),w:d3.max(v,d=>d.w),date:v[0].date}),d=>d.Date).map(([,v])=>v).sort((a,b)=>a.date-b.date);
+    allByDate[ex]=d3.rollups(ed,v=>({max1rm:d3.max(v,d=>d.e1rm),s1:d3.mean(v.filter(d=>d.set===1),d=>d.e1rm),s2:d3.mean(v.filter(d=>d.set===2),d=>d.e1rm),w:d3.max(v,d=>d.w),date:v[0].date,dateStr:v[0].Date}),d=>d.Date).map(([,v])=>v).sort((a,b)=>a.date-b.date);
   });
-  buildStats();buildSmallMultiples();buildExerciseBtns();updateFatigue(activeEx);buildRepDrop();buildRPEVolume();buildRanking();buildHeatmap();setupModal();setupNav();
+
+  buildStats(); buildReplayGrid(); buildSmallMultiples();
+  buildExerciseBtns(); updateFatigue(activeEx); buildRepDrop();
+  buildRPEVolume(); buildHeatmap(); buildWhatIfSelects(); buildCompareSelects();
+  updateWhatIf(); updateComparison(); setupModal(); setupNav();
 });
 
+// ── Stats ────────────────────────────────────────────────────────────────────
 function buildStats(){
   const tv=d3.sum(rawData,d=>d.vol);
   d3.select('#stats').selectAll('.stat-box').data([{num:'13',label:'Exercises'},{num:'7',label:'Weeks'},{num:rawData.length,label:'Total Sets'},{num:(tv/1000).toFixed(0)+'K',label:'Total Volume (lbs)'}]).join('div').attr('class','stat-box').html(d=>`<div class="num">${d.num}</div><div class="label">${d.label}</div>`);
 }
 
+// ── REPLAY ───────────────────────────────────────────────────────────────────
+let replayPanels={};
+function buildReplayGrid(){
+  const g=d3.select('#sm-grid-replay');
+  const smW=160,smH=95,M={top:6,right:8,bottom:22,left:38};
+  exercises.forEach(ex=>{
+    const bd=allByDate[ex],color=wtypeMap[ex]==='Upper Body'?UPPER:LOWER;
+    const xs=d3.scaleTime().domain(d3.extent(bd,d=>d.date)).range([M.left,smW-M.right]);
+    const ys=d3.scaleLinear().domain([d3.min(bd,d=>d.max1rm)*0.95,d3.max(bd,d=>d.max1rm)*1.05]).range([smH-M.bottom,M.top]);
+    const pct=((bd[bd.length-1].max1rm-bd[0].max1rm)/bd[0].max1rm*100).toFixed(0);
+    const pc=+pct>=0?'#81c784':RED;
+    const panel=g.append('div').attr('class','sm-panel').attr('id','rp-'+ex.replace(/\s+/g,'_'));
+    panel.append('div').attr('class','sm-title').text(ex);
+    panel.append('div').attr('class','sm-pct').style('color',pc).text((+pct>=0?'+':'')+pct+'%');
+    const svg=panel.append('svg').attr('width',smW).attr('height',smH);
+    svg.append('g').attr('transform',`translate(${M.left},0)`).call(d3.axisLeft(ys).ticks(3)).call(g=>g.select('.domain').remove()).call(g=>g.selectAll('.tick line').remove()).call(g=>g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',8));
+    svg.append('text').attr('transform','rotate(-90)').attr('x',-(smH/2)).attr('y',11).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',7).text('Est. 1RM (lbs)');
+    svg.append('g').attr('transform',`translate(0,${smH-M.bottom})`).call(d3.axisBottom(xs).ticks(4).tickFormat(d3.timeFormat('%m/%d'))).call(g=>g.select('.domain').remove()).call(g=>g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',7));
+    // background line (full data, faint)
+    const line=d3.line().x(d=>xs(d.date)).y(d=>ys(d.max1rm)).curve(d3.curveMonotoneX);
+    svg.append('path').datum(bd).attr('fill','none').attr('stroke',color).attr('stroke-width',1).attr('opacity',.15).attr('d',line);
+    // animated path
+    const animPath=svg.append('path').attr('fill','none').attr('stroke',color).attr('stroke-width',2).attr('d','');
+    // current dot
+    const curDot=svg.append('circle').attr('r',4).attr('fill',color).attr('opacity',0);
+    // PR star
+    const prStar=svg.append('text').attr('text-anchor','middle').attr('font-size',12).attr('fill',GOLD).attr('opacity',0).text('⭐');
+    replayPanels[ex]={svg,xs,ys,animPath,curDot,prStar,line,bd,color};
+    prLog[ex]=0;
+  });
+  document.getElementById('session-slider').max=allDates.length-1;
+}
+
+function scrubTo(idx){
+  replayIdx=idx;
+  document.getElementById('session-slider').value=idx;
+  document.getElementById('replay-label').textContent=`Session ${idx+1} of ${allDates.length}`;
+  const visibleDates=allDates.slice(0,idx+1);
+  const newPRs=[];
+  exercises.forEach(ex=>{
+    const {xs,ys,animPath,curDot,prStar,bd,color}=replayPanels[ex];
+    const visible=bd.filter(d=>visibleDates.includes(d.dateStr));
+    if(visible.length===0){animPath.attr('d','');curDot.attr('opacity',0);prStar.attr('opacity',0);return;}
+    const line=d3.line().x(d=>xs(d.date)).y(d=>ys(d.max1rm)).curve(d3.curveMonotoneX);
+    animPath.attr('d',line(visible));
+    const last=visible[visible.length-1];
+    curDot.attr('cx',xs(last.date)).attr('cy',ys(last.max1rm)).attr('opacity',1);
+    // PR detection
+    if(last.max1rm>prLog[ex]){
+      if(prLog[ex]>0){
+        newPRs.push({ex,val:last.max1rm,date:d3.timeFormat('%b %d')(last.date)});
+        prStar.attr('cx',xs(last.date)).attr('x',xs(last.date)).attr('y',ys(last.max1rm)-10).attr('opacity',1);
+        // flash
+        prStar.transition().duration(300).attr('opacity',1).transition().duration(300).attr('opacity',.4).transition().duration(300).attr('opacity',1);
+      }
+      prLog[ex]=last.max1rm;
+    } else {
+      prStar.attr('opacity',0);
+    }
+  });
+  // PR feed
+  if(newPRs.length>0){
+    const feed=document.getElementById('pr-feed');
+    newPRs.forEach(pr=>{
+      const item=document.createElement('div');item.className='pr-item';
+      item.innerHTML=`<span class="pr-star">⭐</span><span class="pr-ex">${pr.ex}</span><span class="pr-val">${pr.val.toFixed(0)} lbs</span><span class="pr-date">${pr.date}</span>`;
+      feed.prepend(item);
+    });
+  }
+}
+
+function togglePlay(){
+  if(isPlaying){clearInterval(replayTimer);isPlaying=false;document.getElementById('play-btn').textContent='▶ Play';}
+  else{
+    isPlaying=true;document.getElementById('play-btn').textContent='⏸ Pause';
+    if(replayIdx>=allDates.length-1){replayIdx=0;Object.keys(prLog).forEach(k=>prLog[k]=0);document.getElementById('pr-feed').innerHTML='';}
+    replayTimer=setInterval(()=>{
+      if(replayIdx>=allDates.length-1){clearInterval(replayTimer);isPlaying=false;document.getElementById('play-btn').textContent='▶ Play';return;}
+      replayIdx++;scrubTo(replayIdx);
+    },replaySpeed);
+  }
+}
+function setSpeed(v){replaySpeed=v;if(isPlaying){clearInterval(replayTimer);replayTimer=setInterval(()=>{if(replayIdx>=allDates.length-1){clearInterval(replayTimer);isPlaying=false;document.getElementById('play-btn').textContent='▶ Play';return;}replayIdx++;scrubTo(replayIdx);},replaySpeed);}}
+
+// ── FULL SMALL MULTIPLES ─────────────────────────────────────────────────────
 function buildSmallMultiples(){
   const g=d3.select('#sm-grid'),smW=160,smH=92,M={top:6,right:8,bottom:22,left:38};
   exercises.forEach(ex=>{
@@ -195,6 +394,10 @@ function buildSmallMultiples(){
     const panel=g.append('div').attr('class','sm-panel').attr('data-ex',ex).attr('data-type',wtypeMap[ex]==='Upper Body'?'upper':'lower');
     panel.append('div').attr('class','sm-title').text(ex);
     panel.append('div').attr('class','sm-pct').style('color',pc).text((+pct>=0?'+':'')+pct+'%');
+    // count PRs
+    let prCount=0,runMax=0;
+    bd.forEach(d=>{if(d.max1rm>runMax&&runMax>0)prCount++;if(d.max1rm>runMax)runMax=d.max1rm;});
+    if(prCount>0) panel.append('div').attr('class','pr-badge').text('⭐'+prCount);
     const svg=panel.append('svg').attr('width',smW).attr('height',smH);
     svg.append('g').attr('transform',`translate(${M.left},0)`).call(d3.axisLeft(ys).ticks(3).tickSize(-(smW-M.left-M.right))).call(g=>g.select('.domain').remove()).call(g=>g.selectAll('.tick line').attr('stroke','#21262d')).call(g=>g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',8));
     svg.append('text').attr('transform','rotate(-90)').attr('x',-(smH/2)).attr('y',11).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',7).text('Est. 1RM (lbs)');
@@ -207,30 +410,25 @@ function buildSmallMultiples(){
       }
     });
     svg.append('line').attr('x1',xs(bd[0].date)).attr('x2',xs(bd[bd.length-1].date)).attr('y1',ys(intercept)).attr('y2',ys(slope*(bd.length-1)+intercept)).attr('stroke',ORANGE).attr('stroke-width',1).attr('stroke-dasharray','3,2').attr('opacity',.85);
+    // PR dots in gold
+    let runMax2=0;
+    bd.forEach(d=>{const isPR=d.max1rm>runMax2&&runMax2>0;if(d.max1rm>runMax2)runMax2=d.max1rm;if(isPR){svg.append('circle').attr('cx',xs(d.date)).attr('cy',ys(d.max1rm)-6).attr('r',3).attr('fill',GOLD);}});
     const line=d3.line().x(d=>xs(d.date)).y(d=>ys(d.max1rm)).curve(d3.curveMonotoneX);
     svg.append('path').datum(bd).attr('fill','none').attr('stroke',color).attr('stroke-width',1.5).attr('d',line);
-    svg.selectAll('circle').data(bd).join('circle').attr('cx',d=>xs(d.date)).attr('cy',d=>ys(d.max1rm)).attr('r',2.5).attr('fill',color).on('mousemove',(e,d)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Max 1RM: ${d.max1rm.toFixed(0)} lbs<br>S1: ${d.s1?.toFixed(0)} / S2: ${d.s2?.toFixed(0)} lbs`,e)).on('mouseleave',hideTip);
+    svg.selectAll('circle.dot').data(bd).join('circle').attr('class','dot').attr('cx',d=>xs(d.date)).attr('cy',d=>ys(d.max1rm)).attr('r',2.5).attr('fill',color).on('mousemove',(e,d)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Max 1RM: ${d.max1rm.toFixed(0)} lbs<br>S1: ${d.s1?.toFixed(0)} / S2: ${d.s2?.toFixed(0)} lbs`,e)).on('mouseleave',hideTip);
     panel.append('div').attr('class','sm-hint').text('click to explore ↓');
-    panel.on('click',()=>{
-      if(activeEx===ex){openModal(ex);return;}
-      selectExercise(ex);
-      document.getElementById('section-fatigue').scrollIntoView({behavior:'smooth',block:'start'});
-    });
+    panel.on('click',()=>{if(activeEx===ex){openModal(ex);return;}selectExercise(ex);document.getElementById('section-fatigue').scrollIntoView({behavior:'smooth',block:'start'});});
   });
   d3.select(`.sm-panel[data-ex="${activeEx}"]`).classed('selected',true);
 }
 
 function filterPanels(type){
   ['all','upper','lower'].forEach(t=>{
-    const btn=document.getElementById('filter-'+t);
-    btn.classList.toggle('active',t===type);
-    if(t==='lower'&&type==='lower') btn.style.background='#81c784',btn.style.borderColor='#81c784',btn.style.color='#0d1117';
-    else if(t==='lower') btn.style.background='',btn.style.borderColor='',btn.style.color='';
+    const b=document.getElementById('filter-'+t);
+    b.classList.toggle('active',t===type);
+    if(t==='lower'&&type==='lower')b.classList.add('lower-a');else b.classList.remove('lower-a');
   });
-  d3.selectAll('.sm-panel').each(function(){
-    const pt=this.getAttribute('data-type');
-    d3.select(this).classed('hidden',type!=='all'&&pt!==type);
-  });
+  d3.selectAll('.sm-panel').each(function(){d3.select(this).classed('hidden',type!=='all'&&this.getAttribute('data-type')!==type);});
 }
 
 function selectExercise(ex){
@@ -239,8 +437,7 @@ function selectExercise(ex){
   d3.select(`.sm-panel[data-ex="${ex}"]`).classed('selected',true);
   d3.selectAll('#exercise-btns .btn').classed('active',false);
   d3.select(`#exercise-btns .btn[data-ex="${ex}"]`).classed('active',true);
-  updateFatigue(ex);
-  updateSummaryCard(ex);
+  updateFatigue(ex);updateSummaryCard(ex);
 }
 
 function updateSummaryCard(ex){
@@ -248,13 +445,12 @@ function updateSummaryCard(ex){
   const pct=((bd[bd.length-1].max1rm-bd[0].max1rm)/bd[0].max1rm*100).toFixed(1);
   const drop=(d3.mean(rawData.filter(d=>d.Exercise===ex&&d.set===1),d=>d.reps)-d3.mean(rawData.filter(d=>d.Exercise===ex&&d.set===2),d=>d.reps)).toFixed(2);
   const peak=d3.max(bd,d=>d.max1rm).toFixed(0);
-  const type=wtypeMap[ex];
+  let prCount=0,runMax=0;bd.forEach(d=>{if(d.max1rm>runMax&&runMax>0)prCount++;if(d.max1rm>runMax)runMax=d.max1rm;});
   document.getElementById('sc-gain').textContent=(pct>=0?'+':'')+pct+'%';
   document.getElementById('sc-gain').style.color=+pct>=0?'#81c784':RED;
   document.getElementById('sc-fatigue').textContent=drop+' reps';
   document.getElementById('sc-peak').textContent=peak+' lbs';
-  document.getElementById('sc-type').textContent=type;
-  document.getElementById('sc-type').style.color=type==='Upper Body'?UPPER:LOWER;
+  document.getElementById('sc-prs').textContent=prCount+' PRs';
 }
 
 function buildExerciseBtns(){
@@ -263,11 +459,11 @@ function buildExerciseBtns(){
   updateSummaryCard(activeEx);
 }
 
+// ── FATIGUE ──────────────────────────────────────────────────────────────────
 function updateFatigue(ex){
-  document.getElementById('fatigue-title').textContent=`Set 1 vs Set 2 — ${ex} — Estimated 1RM Over Time`;
+  document.getElementById('fatigue-title').textContent=`Set 1 vs Set 2 — ${ex}`;
   const bd=allByDate[ex],color=wtypeMap[ex]==='Upper Body'?UPPER:LOWER;
-  const wcs=[];
-  for(let i=1;i<bd.length;i++) if(bd[i].w!==bd[i-1].w) wcs.push({date:bd[i].date,from:bd[i-1].w,to:bd[i].w});
+  const wcs=[];for(let i=1;i<bd.length;i++)if(bd[i].w!==bd[i-1].w)wcs.push({date:bd[i].date,from:bd[i-1].w,to:bd[i].w});
   const W=Math.min(860,window.innerWidth-80),H=280,M={top:30,right:28,bottom:44,left:58};
   d3.select('#fatigue-chart').selectAll('*').remove();
   const svg=d3.select('#fatigue-chart').append('svg').attr('width',W).attr('height',H);
@@ -277,24 +473,23 @@ function updateFatigue(ex){
   svg.append('g').attr('transform',`translate(${M.left},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W-M.left-M.right))).call(g=>g.select('.domain').attr('stroke','#30363d')).call(g=>g.selectAll('.tick line').attr('stroke','#21262d')).call(g=>g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',11));
   svg.append('text').attr('transform','rotate(-90)').attr('x',-(H/2)).attr('y',18).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Est. 1RM (lbs)');
   svg.append('text').attr('x',W/2).attr('y',H-4).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Date');
-  wcs.forEach(wc=>{
-    svg.append('line').attr('x1',x(wc.date)).attr('x2',x(wc.date)).attr('y1',M.top).attr('y2',H-M.bottom).attr('stroke','#fff').attr('stroke-width',1).attr('stroke-dasharray','3,3').attr('opacity',.22);
-    svg.append('text').attr('x',x(wc.date)+4).attr('y',M.top+12).attr('fill','#fff').attr('font-size',9).attr('opacity',.65).text(`↑${wc.from}→${wc.to}`);
-  });
+  wcs.forEach(wc=>{svg.append('line').attr('x1',x(wc.date)).attr('x2',x(wc.date)).attr('y1',M.top).attr('y2',H-M.bottom).attr('stroke','#fff').attr('stroke-width',1).attr('stroke-dasharray','3,3').attr('opacity',.2);svg.append('text').attr('x',x(wc.date)+4).attr('y',M.top+12).attr('fill','#fff').attr('font-size',9).attr('opacity',.65).text(`↑${wc.from}→${wc.to}`);});
   const area=d3.area().x(d=>x(d.date)).y0(d=>y(d.s2)).y1(d=>y(d.s1)).curve(d3.curveMonotoneX);
   svg.append('path').datum(bd).attr('fill',ORANGE).attr('opacity',.12).attr('d',area);
-  [{k:'s1',c:color,dash:null},{k:'s2',c:ORANGE,dash:'4,3'}].forEach(cfg=>{
-    const l=d3.line().x(d=>x(d.date)).y(d=>y(d[cfg.k])).curve(d3.curveMonotoneX);
-    svg.append('path').datum(bd).attr('fill','none').attr('stroke',cfg.c).attr('stroke-width',2).attr('stroke-dasharray',cfg.dash||'none').attr('d',l);
+  [{k:'s1',c:color,dash:null},{k:'s2',c:ORANGE,dash:'4,3'}].forEach(cfg=>{const l=d3.line().x(d=>x(d.date)).y(d=>y(d[cfg.k])).curve(d3.curveMonotoneX);svg.append('path').datum(bd).attr('fill','none').attr('stroke',cfg.c).attr('stroke-width',2).attr('stroke-dasharray',cfg.dash||'none').attr('d',l);});
+  // PR markers on fatigue chart
+  let runMax=0;
+  bd.forEach(d=>{
+    const isPR=d.s1>runMax&&runMax>0;
+    if(d.s1>runMax)runMax=d.s1;
+    if(isPR)svg.append('text').attr('x',x(d.date)).attr('y',y(d.s1)-8).attr('text-anchor','middle').attr('font-size',11).attr('fill',GOLD).text('⭐');
   });
-  ['s1','s2'].forEach((k,i)=>{
-    svg.selectAll('.dot-'+k).data(bd).join('circle').attr('class','dot-'+k).attr('cx',d=>x(d.date)).attr('cy',d=>y(d[k])).attr('r',4).attr('fill',i===0?color:ORANGE).on('mousemove',(e,d)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Set ${i+1}: ${d[k]?.toFixed(0)} lbs<br>Fatigue: ${(d.s1-d.s2).toFixed(1)} lbs`,e)).on('mouseleave',hideTip);
-  });
+  ['s1','s2'].forEach((k,i)=>{svg.selectAll('.dot-'+k).data(bd).join('circle').attr('class','dot-'+k).attr('cx',d=>x(d.date)).attr('cy',d=>y(d[k])).attr('r',4).attr('fill',i===0?color:ORANGE).on('mousemove',(e,d)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Set ${i+1}: ${d[k]?.toFixed(0)} lbs<br>Fatigue: ${(d.s1-d.s2).toFixed(1)} lbs`,e)).on('mouseleave',hideTip);});
   const lg=svg.append('g').attr('transform',`translate(${M.left},${M.top-15})`);
-  [[color,'Set 1'],[ORANGE,'Set 2']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*110).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*110+10).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
-  lg.append('text').attr('x',235).attr('y',4).attr('fill','#fff').attr('font-size',9).attr('opacity',.45).text('| dashed lines = weight increases');
+  [[color,'Set 1'],[ORANGE,'Set 2'],[GOLD,'PR']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*100).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*100+10).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
 }
 
+// ── REP DROP ─────────────────────────────────────────────────────────────────
 function buildRepDrop(){
   const rd=exercises.map(ex=>({ex,drop:d3.mean(rawData.filter(d=>d.Exercise===ex&&d.set===1),d=>d.reps)-d3.mean(rawData.filter(d=>d.Exercise===ex&&d.set===2),d=>d.reps),type:wtypeMap[ex]})).sort((a,b)=>a.drop-b.drop);
   const W=Math.min(860,window.innerWidth-80),H=300,M={top:10,right:20,bottom:10,left:185};
@@ -307,6 +502,133 @@ function buildRepDrop(){
   svg.selectAll('.rdlbl').data(rd).join('text').attr('class','rdlbl').attr('x',d=>x(d.drop)+4).attr('y',d=>y(d.ex)+y.bandwidth()/2+4).attr('fill','#8b949e').attr('font-size',10).text(d=>d.drop.toFixed(2));
 }
 
+// ── WHAT-IF SIMULATOR ────────────────────────────────────────────────────────
+function buildWhatIfSelects(){
+  const sel=document.getElementById('wi-exercise-select');
+  exercises.forEach(ex=>{const o=document.createElement('option');o.value=ex;o.textContent=ex;sel.appendChild(o);});
+  sel.value='Bench Press';
+}
+
+function updateWhatIf(){
+  const ex=document.getElementById('wi-exercise-select').value;
+  const weeksAhead=+document.getElementById('weeks-ahead-slider').value;
+  document.getElementById('wi-weeks-label').textContent=weeksAhead+' week'+(weeksAhead===1?'':'s');
+  const bd=allByDate[ex];
+  const [slope,intercept]=linReg(bd.map((_,i)=>i),bd.map(d=>d.max1rm));
+  const projectedIdx=bd.length-1+weeksAhead*2; // ~2 sessions per week
+  const projectedVal=slope*projectedIdx+intercept;
+  const currentVal=bd[bd.length-1].max1rm;
+  const gain=((projectedVal-currentVal)/currentVal*100).toFixed(1);
+  document.getElementById('wi-result').innerHTML=
+    `In <strong>${weeksAhead} week${weeksAhead===1?'':'s'}</strong>, your estimated ${ex} 1RM could reach <strong style="color:#ff9800;font-size:1.3rem">${projectedVal.toFixed(0)} lbs</strong> — that's <strong style="color:#81c784">+${gain}%</strong> from your current ${currentVal.toFixed(0)} lbs.`;
+  document.getElementById('whatif-title').textContent=`${ex} — Actual + ${weeksAhead}-Week Projection`;
+
+  // Draw chart
+  const W=Math.min(860,window.innerWidth-80),H=260,M={top:20,right:30,bottom:44,left:58};
+  d3.select('#whatif-chart').selectAll('*').remove();
+  const svg=d3.select('#whatif-chart').append('svg').attr('width',W).attr('height',H);
+  const color=wtypeMap[ex]==='Upper Body'?UPPER:LOWER;
+
+  // Build projection dates
+  const lastDate=bd[bd.length-1].date;
+  const projDates=[];
+  for(let i=1;i<=weeksAhead*2;i++){
+    const d=new Date(lastDate);d.setDate(d.getDate()+i*3.5);
+    projDates.push({date:d,val:slope*(bd.length-1+i)+intercept,projected:true});
+  }
+  const allPts=[...bd.map((d,i)=>({date:d.date,val:d.max1rm,idx:i,projected:false})),...projDates.map((d,i)=>({...d,idx:bd.length+i}))];
+
+  const x=d3.scaleTime().domain(d3.extent(allPts,d=>d.date)).range([M.left,W-M.right]);
+  const y=d3.scaleLinear().domain([d3.min(allPts,d=>d.val)*0.95,d3.max(allPts,d=>d.val)*1.05]).range([H-M.bottom,M.top]);
+
+  svg.append('g').attr('transform',`translate(0,${H-M.bottom})`).call(d3.axisBottom(x).ticks(8).tickFormat(d3.timeFormat('%b %d'))).call(g=>g.select('.domain').attr('stroke','#30363d')).call(g=>g.selectAll('text').attr('fill','#8b949e').attr('font-size',11));
+  svg.append('g').attr('transform',`translate(${M.left},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W-M.left-M.right))).call(g=>g.select('.domain').attr('stroke','#30363d')).call(g=>g.selectAll('.tick line').attr('stroke','#21262d')).call(g=>g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',11));
+  svg.append('text').attr('transform','rotate(-90)').attr('x',-(H/2)).attr('y',18).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Est. 1RM (lbs)');
+  svg.append('text').attr('x',W/2).attr('y',H-4).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Date');
+
+  // Actual line
+  const lineAct=d3.line().x(d=>x(d.date)).y(d=>y(d.max1rm)).curve(d3.curveMonotoneX);
+  svg.append('path').datum(bd).attr('fill','none').attr('stroke',color).attr('stroke-width',2.5).attr('d',lineAct);
+  svg.selectAll('circle.act').data(bd).join('circle').attr('class','act').attr('cx',d=>x(d.date)).attr('cy',d=>y(d.max1rm)).attr('r',4).attr('fill',color).on('mousemove',(e,d)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Actual: ${d.max1rm.toFixed(0)} lbs`,e)).on('mouseleave',hideTip);
+
+  // Projection line
+  const linePts=[{date:lastDate,val:bd[bd.length-1].max1rm},...projDates];
+  const lineProj=d3.line().x(d=>x(d.date)).y(d=>y(d.val)).curve(d3.curveMonotoneX);
+  svg.append('path').datum(linePts).attr('fill','none').attr('stroke',ORANGE).attr('stroke-width',2).attr('stroke-dasharray','6,4').attr('d',lineProj);
+  svg.selectAll('circle.proj').data(projDates).join('circle').attr('class','proj').attr('cx',d=>x(d.date)).attr('cy',d=>y(d.val)).attr('r',4).attr('fill',ORANGE).attr('opacity',.7).on('mousemove',(e,d)=>showTip(`<strong>${ex} (projected)</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Projected: ${d.val.toFixed(0)} lbs`,e)).on('mouseleave',hideTip);
+
+  // End label
+  const endPt=projDates[projDates.length-1];
+  svg.append('text').attr('x',x(endPt.date)+6).attr('y',y(endPt.val)+4).attr('fill',ORANGE).attr('font-size',11).attr('font-weight',700).text(endPt.val.toFixed(0)+' lbs');
+
+  // Legend
+  const lg=svg.append('g').attr('transform',`translate(${M.left},${M.top})`);
+  [[color,'Actual'],[ORANGE,'Projected (trend)']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*150).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*150+10).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
+
+  // Divider line
+  svg.append('line').attr('x1',x(lastDate)).attr('x2',x(lastDate)).attr('y1',M.top).attr('y2',H-M.bottom).attr('stroke','#fff').attr('stroke-width',1).attr('stroke-dasharray','3,3').attr('opacity',.3);
+  svg.append('text').attr('x',x(lastDate)+4).attr('y',M.top+10).attr('fill','#fff').attr('font-size',9).attr('opacity',.5).text('Today');
+}
+
+// ── COMPARISON ───────────────────────────────────────────────────────────────
+function buildCompareSelects(){
+  ['compare-ex1','compare-ex2'].forEach((id,i)=>{
+    const sel=document.getElementById(id);
+    exercises.forEach(ex=>{const o=document.createElement('option');o.value=ex;o.textContent=ex;sel.appendChild(o);});
+    sel.value=i===0?'Bench Press':'Cable Chest Fly';
+  });
+}
+
+function swapComparison(){
+  const s1=document.getElementById('compare-ex1'),s2=document.getElementById('compare-ex2');
+  const tmp=s1.value;s1.value=s2.value;s2.value=tmp;updateComparison();
+}
+
+function updateComparison(){
+  const ex1=document.getElementById('compare-ex1').value;
+  const ex2=document.getElementById('compare-ex2').value;
+  document.getElementById('compare-title').textContent=`${ex1} vs ${ex2} — Normalized % Change from Week 1`;
+  const c1=wtypeMap[ex1]==='Upper Body'?UPPER:LOWER;
+  const c2=wtypeMap[ex2]==='Upper Body'?'#ce93d8':'#ffb74d';
+
+  const norm=(ex)=>{
+    const bd=allByDate[ex];
+    const base=bd[0].max1rm;
+    return bd.map(d=>({date:d.date,pct:(d.max1rm-base)/base*100,max1rm:d.max1rm}));
+  };
+  const d1=norm(ex1),d2=norm(ex2);
+
+  const W=Math.min(860,window.innerWidth-80),H=280,M={top:30,right:30,bottom:44,left:60};
+  d3.select('#compare-chart').selectAll('*').remove();
+  const svg=d3.select('#compare-chart').append('svg').attr('width',W).attr('height',H);
+
+  const allPcts=[...d1.map(d=>d.pct),...d2.map(d=>d.pct)];
+  const x=d3.scaleTime().domain(d3.extent([...d1,...d2],d=>d.date)).range([M.left,W-M.right]);
+  const y=d3.scaleLinear().domain([Math.min(0,d3.min(allPcts))-2,d3.max(allPcts)*1.1]).range([H-M.bottom,M.top]);
+
+  svg.append('g').attr('transform',`translate(0,${H-M.bottom})`).call(d3.axisBottom(x).ticks(8).tickFormat(d3.timeFormat('%b %d'))).call(g=>g.select('.domain').attr('stroke','#30363d')).call(g=>g.selectAll('text').attr('fill','#8b949e').attr('font-size',11));
+  svg.append('g').attr('transform',`translate(${M.left},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W-M.left-M.right)).tickFormat(d=>(d>=0?'+':'')+d.toFixed(0)+'%')).call(g=>g.select('.domain').attr('stroke','#30363d')).call(g=>g.selectAll('.tick line').attr('stroke','#21262d')).call(g=>g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',11));
+  svg.append('text').attr('transform','rotate(-90)').attr('x',-(H/2)).attr('y',18).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('% Change from Start');
+  svg.append('text').attr('x',W/2).attr('y',H-4).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Date');
+
+  // Zero line
+  svg.append('line').attr('x1',M.left).attr('x2',W-M.right).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','#555').attr('stroke-width',1).attr('stroke-dasharray','3,3');
+
+  [[d1,ex1,c1],[d2,ex2,c2]].forEach(([data,ex,color])=>{
+    const line=d3.line().x(d=>x(d.date)).y(d=>y(d.pct)).curve(d3.curveMonotoneX);
+    svg.append('path').datum(data).attr('fill','none').attr('stroke',color).attr('stroke-width',2.5).attr('d',line);
+    svg.selectAll('.cmp-dot-'+ex.replace(/\s+/g,'_')).data(data).join('circle').attr('cx',d=>x(d.date)).attr('cy',d=>y(d.pct)).attr('r',4.5).attr('fill',color).on('mousemove',(e,d)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Change: ${d.pct>=0?'+':''}${d.pct.toFixed(1)}%<br>1RM: ${d.max1rm.toFixed(0)} lbs`,e)).on('mouseleave',hideTip);
+    // end label
+    const last=data[data.length-1];
+    svg.append('text').attr('x',x(last.date)+6).attr('y',y(last.pct)+4).attr('fill',color).attr('font-size',11).attr('font-weight',700).text((last.pct>=0?'+':'')+last.pct.toFixed(1)+'%');
+  });
+
+  // Legend
+  const lg=svg.append('g').attr('transform',`translate(${M.left},${M.top-15})`);
+  [[c1,ex1],[c2,ex2]].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*220).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*220+10).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
+}
+
+// ── RPE VOLUME ───────────────────────────────────────────────────────────────
 function buildRPEVolume(){
   const wk=d3.rollups(rawData,v=>({week:v[0].week,rpe:d3.mean(v,d=>d.rpe),rpeMin:d3.min(v,d=>d.rpe),rpeMax:d3.max(v,d=>d.rpe),vol:d3.sum(v,d=>d.vol)}),d=>d.week).map(([,v])=>v).sort((a,b)=>a.week-b.week);
   const W=Math.min(860,window.innerWidth-80),H=300,M={top:36,right:72,bottom:50,left:68};
@@ -327,29 +649,13 @@ function buildRPEVolume(){
   svg.append('text').attr('transform','rotate(90)').attr('x',H/2).attr('y',-(W-M.right+50)).attr('text-anchor','middle').attr('fill',ORANGE).attr('font-size',11).text('Average RPE');
   svg.append('text').attr('x',W/2).attr('y',H-6).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Week');
   const lg=svg.append('g').attr('transform',`translate(${M.left},${M.top-20})`);
-  [[UPPER,'Total Volume (bars)'],[ORANGE,'Avg RPE + spread (error bars)']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*230).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*230+12).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
+  [[UPPER,'Total Volume (bars)'],[ORANGE,'Avg RPE + spread']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*200).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*200+12).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
 }
 
-function buildRanking(){
-  const pr=exercises.map(ex=>{const bd=allByDate[ex];return{ex,pct:(bd[bd.length-1].max1rm-bd[0].max1rm)/bd[0].max1rm*100,type:wtypeMap[ex]};}).sort((a,b)=>a.pct-b.pct);
-  const W=Math.min(860,window.innerWidth-80),H=320,M={top:10,right:60,bottom:30,left:190};
-  const svg=d3.select('#ranking-chart').append('svg').attr('width',W).attr('height',H);
-  const x=d3.scaleLinear().domain([0,d3.max(pr,d=>d.pct)*1.1]).range([M.left,W-M.right]);
-  const y=d3.scaleBand().domain(pr.map(d=>d.ex)).range([M.top,H-M.bottom]).padding(.25);
-  svg.append('g').attr('transform',`translate(0,${M.top})`).call(d3.axisBottom(x).ticks(5).tickSize(H-M.top-M.bottom)).call(g=>g.select('.domain').remove()).call(g=>g.selectAll('.tick line').attr('stroke','#21262d')).call(g=>g.selectAll('.tick text').attr('fill','#8b949e').attr('font-size',10).attr('dy',H-M.bottom+14).text(d=>'+'+d.toFixed(0)+'%'));
-  svg.append('g').attr('transform',`translate(${M.left},0)`).call(d3.axisLeft(y)).call(g=>g.select('.domain').remove()).call(g=>g.selectAll('.tick line').remove()).call(g=>g.selectAll('text').attr('fill','#c9d1d9').attr('font-size',11).style('cursor','pointer').on('click',(_,d)=>{selectExercise(d);document.getElementById('section-fatigue').scrollIntoView({behavior:'smooth',block:'start'});}));
-  svg.selectAll('.rbar').data(pr).join('rect').attr('class','rbar').attr('x',M.left).attr('y',d=>y(d.ex)).attr('width',d=>x(d.pct)-M.left).attr('height',y.bandwidth()).attr('fill',d=>d.type==='Upper Body'?UPPER:LOWER).attr('opacity',.85).attr('rx',2).style('cursor','pointer').on('mousemove',(e,d)=>showTip(`<strong>${d.ex}</strong><br>Total gain: +${d.pct.toFixed(1)}%<br>${d.type}<br><em>Click to explore fatigue</em>`,e)).on('mouseleave',hideTip).on('click',(_,d)=>{selectExercise(d.ex);document.getElementById('section-fatigue').scrollIntoView({behavior:'smooth',block:'start'});});
-  svg.selectAll('.rlbl').data(pr).join('text').attr('class','rlbl').attr('x',d=>x(d.pct)+5).attr('y',d=>y(d.ex)+y.bandwidth()/2+4).attr('fill','#8b949e').attr('font-size',10).text(d=>'+'+d.pct.toFixed(1)+'%');
-  const lg=svg.append('g').attr('transform',`translate(${M.left},${H-8})`);
-  [[UPPER,'Upper Body'],[LOWER,'Lower Body']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*120).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*120+10).attr('y',4).attr('fill','#8b949e').attr('font-size',10).text(t);});
-}
-
+// ── HEATMAP ──────────────────────────────────────────────────────────────────
 function buildHeatmap(){
   const weeks=[1,2,3,4,5,6,7],hmd=[];
-  exercises.forEach(ex=>{
-    const base=d3.max(rawData.filter(d=>d.Exercise===ex&&d.week===1),d=>d.e1rm);
-    weeks.forEach(wk=>{const val=d3.max(rawData.filter(d=>d.Exercise===ex&&d.week===wk),d=>d.e1rm);hmd.push({ex,wk,pct:val&&base?((val-base)/base*100):0});});
-  });
+  exercises.forEach(ex=>{const base=d3.max(rawData.filter(d=>d.Exercise===ex&&d.week===1),d=>d.e1rm);weeks.forEach(wk=>{const val=d3.max(rawData.filter(d=>d.Exercise===ex&&d.week===wk),d=>d.e1rm);hmd.push({ex,wk,pct:val&&base?((val-base)/base*100):0});});});
   const W=Math.min(860,window.innerWidth-80),H=exercises.length*34+60,M={top:40,right:110,bottom:20,left:190};
   const svg=d3.select('#heatmap-chart').append('svg').attr('width',W).attr('height',H);
   const hx=d3.scaleBand().domain(weeks.map(w=>'Wk'+w)).range([M.left,W-M.right]).padding(.05);
@@ -367,15 +673,15 @@ function buildHeatmap(){
   svg.append('g').attr('transform',`translate(${cbX+14},${M.top})`).call(d3.axisRight(cbS).ticks(5).tickFormat(d=>(d>=0?'+':'')+d+'%')).call(g=>g.select('.domain').remove()).call(g=>g.selectAll('text').attr('fill','#8b949e').attr('font-size',10));
 }
 
+// ── MODAL ────────────────────────────────────────────────────────────────────
 function setupModal(){
   document.getElementById('modal-close').addEventListener('click',()=>document.getElementById('modal-overlay').classList.remove('open'));
   document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))document.getElementById('modal-overlay').classList.remove('open');});
 }
-
 function openModal(ex){
   const bd=allByDate[ex],{slope,intercept,pct,pctColor,color}=panelData[ex];
   document.getElementById('modal-title').textContent=ex;
-  document.getElementById('modal-sub').innerHTML=`<span style="color:${pctColor};font-weight:700">${+pct>=0?'+':''}${pct}%</span> overall gain &nbsp;·&nbsp; ${wtypeMap[ex]} &nbsp;·&nbsp; <em style="color:#484f58">double-click a panel to open this</em>`;
+  document.getElementById('modal-sub').innerHTML=`<span style="color:${pctColor};font-weight:700">${+pct>=0?'+':''}${pct}%</span> overall gain · ${wtypeMap[ex]}`;
   const wrap=document.getElementById('modal-svg-wrap');wrap.innerHTML='';
   const mW=640,mH=320,mM={top:24,right:24,bottom:44,left:60};
   const x=d3.scaleTime().domain(d3.extent(bd,d=>d.date)).range([mM.left,mW-mM.right]);
@@ -385,25 +691,23 @@ function openModal(ex){
   svg.append('g').attr('transform',`translate(0,${mH-mM.bottom})`).call(d3.axisBottom(x).ticks(8).tickFormat(d3.timeFormat('%b %d'))).call(g=>g.select('.domain').attr('stroke','#30363d')).call(g=>g.selectAll('text').attr('fill','#8b949e').attr('font-size',11));
   svg.append('text').attr('transform','rotate(-90)').attr('x',-(mH/2)).attr('y',18).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Est. 1RM (lbs)');
   svg.append('text').attr('x',mW/2).attr('y',mH-4).attr('text-anchor','middle').attr('fill','#8b949e').attr('font-size',11).text('Date');
-  for(let i=1;i<bd.length;i++) if(bd[i].w!==bd[i-1].w){svg.append('line').attr('x1',x(bd[i].date)).attr('x2',x(bd[i].date)).attr('y1',mM.top).attr('y2',mH-mM.bottom).attr('stroke','#fff').attr('stroke-width',1).attr('stroke-dasharray','3,3').attr('opacity',.2);svg.append('text').attr('x',x(bd[i].date)+3).attr('y',mM.top+12).attr('fill','#fff').attr('font-size',9).attr('opacity',.6).text(`↑${bd[i-1].w}→${bd[i].w}`);}
+  for(let i=1;i<bd.length;i++)if(bd[i].w!==bd[i-1].w){svg.append('line').attr('x1',x(bd[i].date)).attr('x2',x(bd[i].date)).attr('y1',mM.top).attr('y2',mH-mM.bottom).attr('stroke','#fff').attr('stroke-width',1).attr('stroke-dasharray','3,3').attr('opacity',.2);svg.append('text').attr('x',x(bd[i].date)+3).attr('y',mM.top+12).attr('fill','#fff').attr('font-size',9).attr('opacity',.6).text(`↑${bd[i-1].w}→${bd[i].w}`);}
   bd.forEach(d=>{if(d.s1&&d.s2){svg.append('line').attr('x1',x(d.date)-5).attr('x2',x(d.date)+5).attr('y1',y(d.s1)).attr('y2',y(d.s1)).attr('stroke','#aaa').attr('stroke-width',1.5);svg.append('line').attr('x1',x(d.date)).attr('x2',x(d.date)).attr('y1',y(d.s1)).attr('y2',y(d.s2)).attr('stroke','#aaa').attr('stroke-width',2);svg.append('line').attr('x1',x(d.date)-5).attr('x2',x(d.date)+5).attr('y1',y(d.s2)).attr('y2',y(d.s2)).attr('stroke','#aaa').attr('stroke-width',1.5);}});
   const area=d3.area().x(d=>x(d.date)).y0(d=>y(d.s2)).y1(d=>y(d.s1)).curve(d3.curveMonotoneX);
   svg.append('path').datum(bd).attr('fill',ORANGE).attr('opacity',.12).attr('d',area);
   svg.append('line').attr('x1',x(bd[0].date)).attr('x2',x(bd[bd.length-1].date)).attr('y1',y(intercept)).attr('y2',y(slope*(bd.length-1)+intercept)).attr('stroke',ORANGE).attr('stroke-width',1.5).attr('stroke-dasharray','5,3').attr('opacity',.9);
   const l2=d3.line().x(d=>x(d.date)).y(d=>y(d.max1rm)).curve(d3.curveMonotoneX);
   svg.append('path').datum(bd).attr('fill','none').attr('stroke',color).attr('stroke-width',2.5).attr('d',l2);
-  svg.selectAll('circle').data(bd).join('circle').attr('cx',d=>x(d.date)).attr('cy',d=>y(d.max1rm)).attr('r',5).attr('fill',color);
+  // PR dots in modal
+  let runMax=0;bd.forEach(d=>{const isPR=d.max1rm>runMax&&runMax>0;if(d.max1rm>runMax)runMax=d.max1rm;svg.append('circle').attr('cx',x(d.date)).attr('cy',y(d.max1rm)).attr('r',isPR?7:5).attr('fill',isPR?GOLD:color).attr('stroke',isPR?'#fff':'none').attr('stroke-width',isPR?1.5:0);if(isPR)svg.append('text').attr('x',x(d.date)).attr('y',y(d.max1rm)-10).attr('text-anchor','middle').attr('font-size',11).attr('fill',GOLD).text('⭐');});
   document.getElementById('modal-overlay').classList.add('open');
 }
 
+// ── NAV ──────────────────────────────────────────────────────────────────────
 function setupNav(){
-  const secs=['hero','section-progression','section-fatigue','section-effort','section-ranking','section-heatmap'];
+  const secs=['hero','section-replay','section-progression','section-fatigue','section-whatif','section-compare','section-effort','section-heatmap'];
   const links=document.querySelectorAll('nav a');
-  window.addEventListener('scroll',()=>{
-    let cur='';
-    secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id;});
-    links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
-  });
+  window.addEventListener('scroll',()=>{let cur='';secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id;});links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));});
 }
 </script>
 </body>
