@@ -94,7 +94,17 @@
 
     svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
     footer{text-align:center;padding:40px;color:#484f58;font-size:12px;}
-    @media(max-width:800px){#sm-grid{grid-template-columns:repeat(3,1fr);}#summary-card{grid-template-columns:repeat(2,1fr);}h1{font-size:2rem!important;}nav{padding:10px 14px;gap:12px;}section{padding:50px 16px;}}
+    .glossary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:8px;}
+    .glossary-item{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:14px 16px;cursor:pointer;transition:border-color .2s;}
+    .glossary-item:hover{border-color:#4fc3f7;}
+    .glossary-term{font-size:13px;font-weight:700;color:#4fc3f7;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
+    .glossary-abbr{font-size:10px;color:#484f58;font-weight:400;font-style:italic;margin-left:6px;}
+    .glossary-def{font-size:12px;color:#8b949e;line-height:1.55;max-height:0;overflow:hidden;transition:max-height .3s ease;}
+    .glossary-item.open .glossary-def{max-height:200px;}
+    .glossary-arrow{font-size:11px;color:#484f58;transition:transform .2s;}
+    .glossary-item.open .glossary-arrow{transform:rotate(90deg);}
+    .glossary-formula{background:#161b22;border-radius:4px;padding:4px 8px;font-family:monospace;font-size:11px;color:#ff9800;margin-top:6px;display:inline-block;}
+    @media(max-width:800px){#sm-grid{grid-template-columns:repeat(3,1fr);}#summary-card{grid-template-columns:repeat(2,1fr);}h1{font-size:2rem!important;}nav{padding:10px 14px;gap:12px;}section{padding:50px 16px;}.glossary-grid{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
@@ -108,6 +118,7 @@
   <a href="#section-compare">Compare</a>
   <a href="#section-effort">Effort</a>
   <a href="#section-heatmap">Heatmap</a>
+  <a href="#section-glossary">Glossary</a>
 </nav>
 
 <!-- HERO -->
@@ -248,6 +259,83 @@
   <p class="section-desc">% change from Week 1 per exercise per week. Click any cell to jump to that exercise's fatigue chart.</p>
   <div class="chart-wrap"><div id="heatmap-chart"></div></div>
   <div class="insight-box"><strong>Key finding:</strong> Most gains concentrated in Weeks 2–3. By Weeks 5–7 progress clearly slowed across most exercises.</div>
+</section>
+
+<section id="section-glossary">
+  <div class="section-label">REFERENCE</div>
+  <h2>Glossary</h2>
+  <p class="section-desc">Click any term to expand its definition. These are the key concepts used throughout this visualization.</p>
+  <div class="glossary-grid">
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Estimated 1RM <span class="glossary-abbr">Est. 1RM</span><span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">The maximum weight you could theoretically lift for a single repetition, calculated from your actual working sets using the Epley formula. Since testing your true 1RM is risky and exhausting, this estimate lets you track strength without maxing out every session.
+        <div class="glossary-formula">1RM = weight × (1 + reps / 30)</div>
+      </div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">RPE <span class="glossary-abbr">Rate of Perceived Exertion</span><span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A 1–10 scale that measures how hard a set felt. An RPE of 10 means you gave absolutely everything and could not do another rep. RPE 7 means you had roughly 3 reps left in the tank. It's a way of tracking effort independent of the weight on the bar — the same weight can feel like RPE 7 one week and RPE 9 the next.</div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Set Volume <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">The total amount of work done in a single set, calculated as weight multiplied by repetitions. For example, lifting 185 lbs for 8 reps produces a set volume of 1,480 lbs. Summing set volume across all exercises gives you a measure of your total training workload for a session or week.
+        <div class="glossary-formula">Set Volume = weight × reps</div>
+      </div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Within-Session Fatigue <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">The drop in performance between your first and second set of the same exercise within a single training session. In this dataset, fatigue is measured as the average rep drop from Set 1 to Set 2 across all sessions. A larger drop means the exercise causes more acute fatigue.</div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Compound Exercise <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A multi-joint movement that recruits several large muscle groups simultaneously. Examples in this dataset include Bench Press, Hack Squat, Lat Pulldown, and Leg Press. Compounds are typically the heaviest lifts and form the foundation of a strength program, but they also tend to progress more slowly because they're already trained closer to their limit.</div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Accessory Exercise <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A single-joint or isolation movement that targets a specific muscle. Examples in this dataset include Cable Chest Fly, Bicep Curl, Tricep Pushdown, and Machine Lateral Raise. Accessories are typically lighter and show faster percentage gains — partly because they start from a lower baseline and partly because of rapid early motor learning.</div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Trend Line (Linear Regression) <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A straight line fitted through all data points for an exercise that represents the overall direction of progress. It's calculated using least-squares regression — the line that minimizes the total distance between itself and every data point. Useful for cutting through session-to-session noise to see whether an exercise is genuinely trending up, flat, or down.
+        <div class="glossary-formula">y = slope × session + intercept</div>
+      </div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Error Bar <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A vertical line on a data point showing the range of values within that observation. In the small multiples chart, error bars show the spread between Set 1 and Set 2 estimated 1RM within each session — the top of the bar is Set 1 (fresher), the bottom is Set 2 (fatigued). In the RPE chart, error bars show the minimum to maximum RPE values recorded within each week.</div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Personal Record <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A session where the estimated 1RM exceeded all previous sessions for that exercise. In this visualization, PRs are marked with a ⭐ gold star. A PR doesn't necessarily mean a new weight was used — it can result from getting more reps at the same weight, which produces a higher estimated 1RM. The animated replay shows PRs being set in real time as the data unfolds.</div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Normalized % Change <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A way of comparing exercises on the same scale regardless of the actual weights involved. Each exercise's Week 1 estimated 1RM is treated as the baseline (0%), and all subsequent values are shown as the percentage change from that starting point. This lets you meaningfully compare Cable Chest Fly at 70 lbs and Hack Squat at 247 lbs side by side.
+        <div class="glossary-formula">% change = (current − week1) / week1 × 100</div>
+      </div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Upper Body Split <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A training session focused on muscles above the waist — chest, back, shoulders, biceps, and triceps. In this program, upper body sessions were performed twice per week. The exercises in this category are: Bench Press, Cable Chest Fly, Incline Machine Chest Press, Lat Pulldown, Wide Grip Cable Row, Machine Lateral Raise, Straight Bar Bicep Curl, and Tricep Pushdown.</div>
+    </div>
+
+    <div class="glossary-item" onclick="this.classList.toggle('open')">
+      <div class="glossary-term">Lower Body Split <span class="glossary-arrow">›</span></div>
+      <div class="glossary-def">A training session focused on muscles below the waist — quadriceps, hamstrings, glutes, and calves. In this program, lower body sessions were performed twice per week. The exercises in this category are: Hack Squat, Leg Press, Leg Extension, Hamstring Curl, and Standing Calf Raise.</div>
+    </div>
+
+  </div>
 </section>
 
 <footer>CPSC 582 W2026 · Personal Strength Training Dataset · Jan 22 – Mar 6, 2026</footer>
@@ -705,7 +793,7 @@ function openModal(ex){
 
 // ── NAV ──────────────────────────────────────────────────────────────────────
 function setupNav(){
-  const secs=['hero','section-replay','section-progression','section-fatigue','section-whatif','section-compare','section-effort','section-heatmap'];
+  const secs=['hero','section-replay','section-progression','section-fatigue','section-whatif','section-compare','section-effort','section-heatmap','section-glossary'];
   const links=document.querySelectorAll('nav a');
   window.addEventListener('scroll',()=>{let cur='';secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id;});links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));});
 }
