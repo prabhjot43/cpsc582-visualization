@@ -106,22 +106,33 @@
     .glossary-formula{background:#161b22;border-radius:4px;padding:4px 8px;font-family:monospace;font-size:11px;color:#ff9800;margin-top:6px;display:inline-block;}
     @media(max-width:800px){#sm-grid{grid-template-columns:repeat(3,1fr);}#summary-card{grid-template-columns:repeat(2,1fr);}h1{font-size:2rem!important;}nav{padding:10px 14px;gap:12px;}section{padding:50px 16px;}.glossary-grid{grid-template-columns:1fr;}}
     /* STUDY TRACKER */
-    #study-bar{position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:2px solid #4fc3f7;padding:10px 24px;display:flex;align-items:center;gap:16px;z-index:9999;flex-wrap:wrap;}
+    #study-bar{position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:2px solid #4fc3f7;padding:12px 24px;display:flex;align-items:flex-start;gap:16px;z-index:9999;flex-wrap:wrap;}
     #study-bar .sb-label{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;}
-    #study-task{font-size:13px;font-weight:700;color:#4fc3f7;flex:1;}
-    #study-timer{font-size:18px;font-weight:700;color:#ff9800;min-width:60px;font-family:monospace;}
-    #study-next{padding:6px 16px;border-radius:6px;border:none;background:#4fc3f7;color:#0d1117;font-size:12px;font-weight:700;cursor:pointer;}
-    #study-next:hover{background:#81c784;}
-    #study-end{padding:6px 16px;border-radius:6px;border:1px solid #f85149;background:transparent;color:#f85149;font-size:12px;font-weight:700;cursor:pointer;}
-    #study-end:hover{background:#f85149;color:#fff;}
-    #study-participant{font-size:12px;color:#8b949e;}
-    body{padding-bottom:60px;}
+    body{padding-bottom:90px;}
     #study-start-overlay{position:fixed;inset:0;background:rgba(13,17,23,0.97);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:40px;}
     #study-start-overlay h2{font-size:2rem;color:#4fc3f7;}
     #study-start-overlay p{color:#8b949e;max-width:500px;font-size:14px;line-height:1.7;}
     #study-pid-input{padding:10px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;color:#e6edf3;font-size:14px;text-align:center;width:200px;}
     #study-start-btn{padding:12px 32px;border-radius:8px;border:none;background:#4fc3f7;color:#0d1117;font-size:15px;font-weight:700;cursor:pointer;}
     #study-start-btn:hover{background:#81c784;}
+
+    /* ANSWER POPUP */
+    #answer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;align-items:center;justify-content:center;}
+    #answer-overlay.open{display:flex;}
+    #answer-box{background:#161b22;border:1px solid #4fc3f7;border-radius:12px;padding:32px;max-width:580px;width:92vw;}
+    #answer-task-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#4fc3f7;margin-bottom:8px;}
+    #answer-question{font-size:15px;font-weight:700;color:#e6edf3;margin-bottom:6px;line-height:1.5;}
+    #answer-hint{font-size:12px;color:#8b949e;margin-bottom:16px;font-style:italic;}
+    #answer-success{display:flex;gap:12px;margin-bottom:16px;}
+    .success-btn{flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+    .success-btn:hover{border-color:#4fc3f7;color:#4fc3f7;}
+    .success-btn.selected-yes{border-color:#81c784;background:rgba(129,199,132,0.15);color:#81c784;}
+    .success-btn.selected-no{border-color:#f85149;background:rgba(248,81,73,0.15);color:#f85149;}
+    .success-btn.selected-partial{border-color:#ff9800;background:rgba(255,152,0,0.15);color:#ff9800;}
+    #answer-textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:13px;font-family:inherit;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:16px;}
+    #answer-textarea:focus{outline:none;border-color:#4fc3f7;}
+    #answer-submit{width:100%;padding:12px;border-radius:8px;border:none;background:#4fc3f7;color:#0d1117;font-size:14px;font-weight:700;cursor:pointer;}
+    #answer-submit:hover{background:#81c784;}
   </style>
 </head>
 <body>
@@ -827,29 +838,121 @@ function setupNav(){
 
 <!-- STUDY BOTTOM BAR -->
 <div id="study-bar" style="display:none">
-  <div>
-    <div class="sb-label">Current Task</div>
-    <div id="study-task">—</div>
+  <div style="flex:1;min-width:0;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+      <div class="sb-label" style="white-space:nowrap">Task <span id="study-task-num">1</span> of 4</div>
+      <div id="study-task" style="font-size:13px;font-weight:700;color:#4fc3f7;"></div>
+    </div>
+    <div id="study-instruction" style="font-size:12px;color:#c9d1d9;line-height:1.4;max-width:800px;"></div>
   </div>
-  <div>
-    <div class="sb-label">Time on Task</div>
-    <div id="study-timer">0:00</div>
+  <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;">
+    <div class="sb-label">Timer</div>
+    <div id="study-timer" style="font-size:18px;font-weight:700;color:#ff9800;font-family:monospace;">0:00</div>
   </div>
-  <div style="margin-left:auto;display:flex;gap:10px;align-items:center;">
-    <span id="study-participant" style="color:#484f58"></span>
-    <button id="study-next" onclick="nextTask()">Next Task ›</button>
-    <button id="study-end" onclick="endStudy()">End Session & Download</button>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <span id="study-participant" style="color:#484f58;font-size:12px;"></span>
+    <button id="study-next" onclick="nextTask()" style="padding:8px 18px;border-radius:6px;border:none;background:#4fc3f7;color:#0d1117;font-size:12px;font-weight:700;cursor:pointer;">Next Task ›</button>
+    <button id="study-end" onclick="endStudy()" style="padding:8px 18px;border-radius:6px;border:1px solid #f85149;background:transparent;color:#f85149;font-size:12px;font-weight:700;cursor:pointer;">End & Download</button>
+  </div>
+</div>
+
+<!-- ANSWER POPUP -->
+<div id="answer-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;align-items:center;justify-content:center;">
+  <div id="answer-box" style="background:#161b22;border:1px solid #4fc3f7;border-radius:12px;padding:32px;max-width:580px;width:92vw;">
+    <div id="answer-task-label" style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#4fc3f7;margin-bottom:8px;"></div>
+    <div id="answer-question" style="font-size:15px;font-weight:700;color:#e6edf3;margin-bottom:6px;line-height:1.5;"></div>
+    <div style="font-size:12px;color:#8b949e;margin-bottom:16px;font-style:italic;">Type your answer below — be as specific as you can.</div>
+    <div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Did you complete the task successfully?</div>
+    <div style="display:flex;gap:12px;margin-bottom:16px;">
+      <button class="success-btn" onclick="selectSuccess('yes')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">✓ Yes</button>
+      <button class="success-btn" onclick="selectSuccess('partial')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">~ Partially</button>
+      <button class="success-btn" onclick="selectSuccess('no')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">✗ No</button>
+    </div>
+    <textarea id="answer-textarea" placeholder="Type your answer here..." style="width:100%;padding:12px;border-radius:8px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:13px;font-family:inherit;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:16px;"></textarea>
+    <button onclick="submitAnswer()" style="width:100%;padding:12px;border-radius:8px;border:none;background:#4fc3f7;color:#0d1117;font-size:14px;font-weight:700;cursor:pointer;">Submit & Continue →</button>
   </div>
 </div>
 
 <script>
-// ── STUDY LOGGER ─────────────────────────────────────────────────────────────
 const TASKS = [
-  { id: 'T1', name: 'Task 1 — Linked View', desc: 'Participant exploring small multiples + fatigue link', section: 'section-progression' },
-  { id: 'T2', name: 'Task 2 — What-If Simulator', desc: 'Participant using the What-If projection tool', section: 'section-whatif' },
-  { id: 'T3', name: 'Task 3 — Comparison Chart', desc: 'Participant comparing Bench Press vs Cable Chest Fly', section: 'section-compare' },
-  { id: 'T4', name: 'Task 4 — Free Exploration', desc: 'Participant freely exploring the visualization', section: 'hero' },
+  {
+    id: 'T1',
+    name: 'Task 1 — Linked View',
+    instruction: '👆 Scroll to the Progression section. Click on the Cable Chest Fly panel. Without clicking anything else, scroll down to the Fatigue Explorer section below. What changed?',
+    question: 'What did you notice changed in the Fatigue Explorer when you clicked the Cable Chest Fly panel? What connection does it show between the two charts?',
+    section: 'section-progression'
+  },
+  {
+    id: 'T2',
+    name: 'Task 2 — What-If Simulator',
+    instruction: '🔮 Scroll to the What-If section. Select Bench Press. Drag the slider to 8 weeks ahead, note the number, then drag to 16 weeks ahead.',
+    question: 'What was the projected 1RM at 8 weeks? At 16 weeks? Does the 16-week projection feel realistic or too optimistic compared to what you saw in the progression charts?',
+    section: 'section-whatif'
+  },
+  {
+    id: 'T3',
+    name: 'Task 3 — Comparison Chart',
+    instruction: '⚡ Scroll to the Compare section. Look at Bench Press vs Cable Chest Fly. Hover over the final data point of each line to see the exact values.',
+    question: 'Which exercise showed a bigger % change? What were the final values on hover? Does comparing by % change feel fair even though one uses ~200 lbs and the other ~70 lbs? Why or why not?',
+    section: 'section-compare'
+  },
+  {
+    id: 'T4',
+    name: 'Task 4 — Heatmap',
+    instruction: '🟩 Scroll to the Heatmap section. Each row is an exercise, each column is a week. Green = gaining, red = stalled. Hover over cells for details.',
+    question: 'Which exercise had the most consistent green cells across all 7 weeks? Which week did gains seem to slow down the most? How did you find those answers?',
+    section: 'section-heatmap'
+  },
+  {
+    id: 'T5',
+    name: 'Task 5 — Effort & Volume',
+    instruction: '📊 Scroll to the Effort & Volume section. The blue bars show total weekly volume, the orange line shows average RPE (effort). Hover over each week for exact numbers.',
+    question: 'Did total training volume go up, down, or stay the same across 7 weeks? What happened to RPE over the same period? Does it surprise you that those two trends went in different directions?',
+    section: 'section-effort'
+  },
+  {
+    id: 'T6',
+    name: 'Task 6 — Free Exploration',
+    instruction: '🔍 Explore freely for 5 minutes. Try to find which exercise set the most personal records (⭐) over the 7 weeks using any part of the visualization.',
+    question: 'Which exercise do you think set the most personal records? How did you find that — which part of the visualization helped most? Was anything confusing or unclear?',
+    section: 'hero'
+  },
 ];
+
+let selectedSuccess = null;
+
+function selectSuccess(val) {
+  selectedSuccess = val;
+  const btns = document.querySelectorAll('.success-btn');
+  btns.forEach(b => { b.className = 'success-btn'; });
+  if (val === 'yes') btns[0].classList.add('selected-yes');
+  if (val === 'partial') btns[1].classList.add('selected-partial');
+  if (val === 'no') btns[2].classList.add('selected-no');
+}
+
+function showAnswerPopup(task) {
+  selectedSuccess = null;
+  document.querySelectorAll('.success-btn').forEach(b => b.className = 'success-btn');
+  document.getElementById('answer-task-label').textContent = task.name;
+  document.getElementById('answer-question').textContent = task.question;
+  document.getElementById('answer-textarea').value = '';
+  document.getElementById('answer-overlay').classList.add('open');
+}
+
+function submitAnswer() {
+  const answer = document.getElementById('answer-textarea').value.trim();
+  if (!answer) { alert('Please type your answer before continuing.'); return; }
+  const task = TASKS[session.currentTaskIdx];
+  // save answer into the last task entry
+  const lastTask = session.tasks[session.tasks.length - 1];
+  if (lastTask && lastTask.id === task.id) {
+    lastTask.answer = answer;
+    lastTask.completed = selectedSuccess || 'not-marked';
+  }
+  logEvent('task_answer', { taskId: task.id, answer, completed: selectedSuccess });
+  document.getElementById('answer-overlay').classList.remove('open');
+  advanceTask();
+}
 
 let session = {
   participantId: '',
@@ -873,21 +976,32 @@ function startStudy() {
   document.getElementById('study-participant').textContent = pid;
   logEvent('session_start', { participantId: pid });
   setupTracking();
-  nextTask();
+  advanceTask();
 }
 
 function nextTask() {
-  // save current task time
+  // When Next Task is clicked, save time and show answer popup
   if (session.currentTaskIdx >= 0 && session.taskStartTime) {
     const elapsed = Math.round((Date.now() - session.taskStartTime) / 1000);
     const task = TASKS[session.currentTaskIdx];
     session.tasks.push({ ...task, durationSec: elapsed, endTime: new Date().toISOString() });
     logEvent('task_complete', { taskId: task.id, durationSec: elapsed });
+    clearInterval(session.timerInterval);
+    document.getElementById('study-timer').textContent = '—';
+    // Show answer popup before advancing
+    showAnswerPopup(task);
+    return;
   }
+  advanceTask();
+}
+
+function advanceTask() {
   clearInterval(session.timerInterval);
   session.currentTaskIdx++;
   if (session.currentTaskIdx >= TASKS.length) {
-    document.getElementById('study-task').textContent = 'All tasks complete — end session when ready';
+    document.getElementById('study-task').textContent = '✓ All tasks complete';
+    document.getElementById('study-instruction').textContent = 'Thank you! Please let the researcher know you are finished.';
+    document.getElementById('study-task-num').textContent = '—';
     document.getElementById('study-next').style.display = 'none';
     document.getElementById('study-timer').textContent = '—';
     return;
@@ -895,6 +1009,8 @@ function nextTask() {
   const task = TASKS[session.currentTaskIdx];
   session.taskStartTime = Date.now();
   document.getElementById('study-task').textContent = task.name;
+  document.getElementById('study-instruction').textContent = task.instruction;
+  document.getElementById('study-task-num').textContent = session.currentTaskIdx + 1;
   // Scroll to relevant section
   const el = document.getElementById(task.section);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
