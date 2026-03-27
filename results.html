@@ -205,53 +205,53 @@ function renderRQ() {
   const rows1 = sessions.map(s => {
     const usedLinked = s.featuresUsed.includes('linked_view_triggered');
     const panelClicks = s.events.filter(e => e.type === 'panel_click').length;
-    const linkedEvents = s.events.filter(e => e.type === 'linked_view_used');
+    const t1 = s.tasks.find(t => t.id === 'T1');
     return `<tr>
       <td>${s.participantId}</td>
       <td>${panelClicks} clicks</td>
       <td>${pill(usedLinked)}</td>
-      <td>${linkedEvents.length > 0 ? linkedEvents.map(e=>e.exercise).join(', ') : '—'}</td>
-      <td>${s.sectionsVisited['section-fatigue'] ? Math.round(s.sectionsVisited['section-fatigue'].totalTimeMs/1000)+'s' : '—'}</td>
-    </tr>`;
+      <td>${t1?.durationSec || '—'}s</td>
+      <td>${pill(t1?.completed || 'no-data', 'Yes', 'No')}</td>
+    </tr>
+    ${t1?.answer ? `<tr><td colspan="5" style="color:#8b949e;font-size:12px;font-style:italic;padding:6px 12px;background:#0d1117">"${t1.answer}"</td></tr>` : ''}`;
   }).join('');
-  rq1.innerHTML = `<table><thead><tr><th>Participant</th><th>Panel Clicks</th><th>Linked View Triggered</th><th>Exercise(s)</th><th>Time in Fatigue Section</th></tr></thead><tbody>${rows1}</tbody></table>`;
-  const anyLinked = sessions.some(s => s.featuresUsed.includes('linked_view_triggered'));
-  rq1.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('linked_view_triggered')).length} of ${sessions.length} participants triggered the linked view between the progression panels and the fatigue explorer.</div>`;
+  rq1.innerHTML = `<table><thead><tr><th>Participant</th><th>Panel Clicks</th><th>Linked View Triggered</th><th>Task Time</th><th>Completed</th></tr></thead><tbody>${rows1}</tbody></table>`;
+  rq1.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('linked_view_triggered')).length} of ${sessions.length} participants triggered the linked view automatically by clicking a panel.</div>`;
 
   // RQ2: what-if
   const rq2 = document.getElementById('rq2-content');
   const rows2 = sessions.map(s => {
     const usedSlider = s.featuresUsed.includes('whatif_slider');
     const t2 = s.tasks.find(t => t.id === 'T2');
-    const firstInteract = s.events.find(e => e.type === 'whatif_first_interaction');
     return `<tr>
       <td>${s.participantId}</td>
       <td>${pill(usedSlider)}</td>
-      <td>${t2 ? t2.durationSec + 's' : '—'}</td>
+      <td>${t2?.durationSec || '—'}s</td>
       <td>${s.sectionsVisited['section-whatif'] ? Math.round(s.sectionsVisited['section-whatif'].totalTimeMs/1000)+'s' : '—'}</td>
-      <td>${firstInteract ? Math.round(firstInteract.relativeMs/1000)+'s into session' : 'Never'}</td>
-    </tr>`;
+      <td>${pill(t2?.completed || 'no-data', 'Yes', 'No')}</td>
+    </tr>
+    ${t2?.answer ? `<tr><td colspan="5" style="color:#8b949e;font-size:12px;font-style:italic;padding:6px 12px;background:#0d1117">"${t2.answer}"</td></tr>` : ''}`;
   }).join('');
-  rq2.innerHTML = `<table><thead><tr><th>Participant</th><th>Used Slider</th><th>Task 2 Duration</th><th>Total Time in Section</th><th>First Slider Use</th></tr></thead><tbody>${rows2}</tbody></table>`;
-  rq2.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('whatif_slider')).length} of ${sessions.length} participants interacted with the What-If slider during their session.</div>`;
+  rq2.innerHTML = `<table><thead><tr><th>Participant</th><th>Used Slider</th><th>Task Time</th><th>Total Time in Section</th><th>Completed</th></tr></thead><tbody>${rows2}</tbody></table>`;
+  rq2.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('whatif_slider')).length} of ${sessions.length} participants interacted with the What-If slider.</div>`;
 
   // RQ3: comparison
   const rq3 = document.getElementById('rq3-content');
   const rows3 = sessions.map(s => {
     const usedTooltip = s.featuresUsed.includes('tooltip_hover');
     const swapped = s.featuresUsed.includes('compare_swapped');
-    const changedEx = s.featuresUsed.includes('compare_select_1') || s.featuresUsed.includes('compare_select_2');
-    const timeInSection = s.sectionsVisited['section-compare'] ? Math.round(s.sectionsVisited['section-compare'].totalTimeMs/1000) : 0;
+    const t3 = s.tasks.find(t => t.id === 'T3');
     return `<tr>
       <td>${s.participantId}</td>
       <td>${pill(usedTooltip)}</td>
       <td>${pill(swapped)}</td>
-      <td>${pill(changedEx)}</td>
-      <td>${timeInSection}s</td>
-    </tr>`;
+      <td>${t3?.durationSec || '—'}s</td>
+      <td>${pill(t3?.completed || 'no-data', 'Yes', 'No')}</td>
+    </tr>
+    ${t3?.answer ? `<tr><td colspan="5" style="color:#8b949e;font-size:12px;font-style:italic;padding:6px 12px;background:#0d1117">"${t3.answer}"</td></tr>` : ''}`;
   }).join('');
-  rq3.innerHTML = `<table><thead><tr><th>Participant</th><th>Used Tooltips</th><th>Used Swap</th><th>Changed Exercise</th><th>Time in Section</th></tr></thead><tbody>${rows3}</tbody></table>`;
-  rq3.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('tooltip_hover')).length} of ${sessions.length} participants hovered over data points in the comparison chart. ${sessions.filter(s=>s.featuresUsed.includes('compare_swapped')).length} used the swap button.</div>`;
+  rq3.innerHTML = `<table><thead><tr><th>Participant</th><th>Used Tooltips</th><th>Used Swap</th><th>Task Time</th><th>Completed</th></tr></thead><tbody>${rows3}</tbody></table>`;
+  rq3.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('tooltip_hover')).length} of ${sessions.length} participants hovered over data points in the comparison chart.</div>`;
 }
 
 function renderTasks() {
