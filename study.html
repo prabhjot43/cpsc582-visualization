@@ -108,7 +108,7 @@
     /* STUDY TRACKER */
     #study-bar{position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:2px solid #4fc3f7;padding:12px 24px;display:flex;align-items:flex-start;gap:16px;z-index:9999;flex-wrap:wrap;}
     #study-bar .sb-label{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:1px;}
-    body{padding-bottom:90px;}
+    body{padding-bottom:120px;}
     #study-start-overlay{position:fixed;inset:0;background:rgba(13,17,23,0.97);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:40px;}
     #study-start-overlay h2{font-size:2rem;color:#4fc3f7;}
     #study-start-overlay p{color:#8b949e;max-width:500px;font-size:14px;line-height:1.7;}
@@ -839,20 +839,20 @@ function setupNav(){
 <!-- STUDY BOTTOM BAR -->
 <div id="study-bar" style="display:none">
   <div style="flex:1;min-width:0;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-      <div class="sb-label" style="white-space:nowrap">Task <span id="study-task-num">1</span> of 4</div>
-      <div id="study-task" style="font-size:13px;font-weight:700;color:#4fc3f7;"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <div class="sb-label" style="white-space:nowrap;background:#4fc3f7;color:#0d1117;padding:2px 8px;border-radius:4px;font-weight:700;">Task <span id="study-task-num">1</span> of 6</div>
+      <div id="study-task" style="font-size:14px;font-weight:700;color:#4fc3f7;"></div>
     </div>
-    <div id="study-instruction" style="font-size:12px;color:#c9d1d9;line-height:1.4;max-width:800px;"></div>
+    <div id="study-instruction" style="font-size:13px;color:#e6edf3;line-height:1.5;max-width:860px;background:#0d1117;padding:8px 12px;border-radius:6px;border-left:3px solid #ff9800;"></div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;">
+  <div style="display:flex;flex-direction:column;align-items:center;min-width:70px;">
     <div class="sb-label">Timer</div>
-    <div id="study-timer" style="font-size:18px;font-weight:700;color:#ff9800;font-family:monospace;">0:00</div>
+    <div id="study-timer" style="font-size:20px;font-weight:700;color:#ff9800;font-family:monospace;">0:00</div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <span id="study-participant" style="color:#484f58;font-size:12px;"></span>
-    <button id="study-next" onclick="nextTask()" style="padding:8px 18px;border-radius:6px;border:none;background:#4fc3f7;color:#0d1117;font-size:12px;font-weight:700;cursor:pointer;">Next Task ›</button>
-    <button id="study-end" onclick="endStudy()" style="padding:8px 18px;border-radius:6px;border:1px solid #f85149;background:transparent;color:#f85149;font-size:12px;font-weight:700;cursor:pointer;">End & Download</button>
+    <button id="study-next" onclick="nextTask()" style="padding:10px 20px;border-radius:6px;border:none;background:#4fc3f7;color:#0d1117;font-size:13px;font-weight:700;cursor:pointer;">Done ✓</button>
+    <button id="study-end" onclick="endStudy()" style="padding:10px 20px;border-radius:6px;border:1px solid #f85149;background:transparent;color:#f85149;font-size:13px;font-weight:700;cursor:pointer;">End & Download</button>
   </div>
 </div>
 
