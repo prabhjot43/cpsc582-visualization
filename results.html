@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Results Dashboard — CPSC 582</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;padding:40px;}
+    h1{font-size:1.8rem;font-weight:700;color:#4fc3f7;margin-bottom:6px;}
+    .sub{color:#8b949e;font-size:13px;margin-bottom:32px;}
+    .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:22px;margin-bottom:20px;}
+    .card h2{font-size:14px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;}
+    .upload-area{border:2px dashed #30363d;border-radius:10px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:24px;}
+    .upload-area:hover{border-color:#4fc3f7;}
+    .upload-area p{color:#8b949e;font-size:14px;margin-top:8px;}
+    .upload-area .icon{font-size:2.5rem;}
+    #file-input{display:none;}
+    .session-chip{display:inline-flex;align-items:center;gap:8px;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:6px 12px;font-size:12px;margin:4px;}
+    .session-chip.loaded{border-color:#81c784;color:#81c784;}
+    table{width:100%;border-collapse:collapse;font-size:13px;}
+    th{text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:8px 12px;border-bottom:1px solid #21262d;}
+    td{padding:8px 12px;border-bottom:1px solid #21262d;color:#c9d1d9;}
+    tr:last-child td{border-bottom:none;}
+    .pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+    .pill.yes{background:rgba(129,199,132,0.15);color:#81c784;}
+    .pill.no{background:rgba(248,81,73,0.15);color:#f85149;}
+    .pill.partial{background:rgba(255,152,0,0.15);color:#ff9800;}
+    .bar-container{display:flex;align-items:center;gap:10px;}
+    .bar-bg{flex:1;background:#21262d;border-radius:4px;height:8px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:4px;background:#4fc3f7;transition:width .5s;}
+    .insight-box{background:#0d1117;border-left:3px solid #4fc3f7;border-radius:0 6px 6px 0;padding:12px 16px;margin-top:12px;font-size:13px;color:#8b949e;}
+    .insight-box strong{color:#e6edf3;}
+    .empty{color:#484f58;font-size:13px;text-align:center;padding:20px;font-style:italic;}
+    .rq-header{font-size:13px;font-weight:700;color:#4fc3f7;margin-bottom:8px;}
+    .finding{font-size:13px;color:#8b949e;margin-bottom:6px;}
+    .finding strong{color:#e6edf3;}
+    #summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+    .sum-box{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:14px;text-align:center;}
+    .sum-val{font-size:1.6rem;font-weight:700;color:#4fc3f7;}
+    .sum-label{font-size:11px;color:#8b949e;margin-top:3px;}
+    .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+    .feature-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:1px solid #21262d;}
+    .feature-row:last-child{border-bottom:none;}
+    .feat-name{color:#c9d1d9;}
+    .feat-count{color:#4fc3f7;font-weight:700;}
+    .timeline{position:relative;padding-left:20px;}
+    .timeline-event{position:relative;margin-bottom:6px;font-size:12px;color:#8b949e;}
+    .timeline-event::before{content:'';position:absolute;left:-14px;top:6px;width:6px;height:6px;border-radius:50%;background:#4fc3f7;}
+    .timeline-time{color:#484f58;font-size:10px;margin-right:6px;}
+    .tab-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+    .tab{padding:6px 14px;border-radius:6px;border:1px solid #30363d;background:#0d1117;color:#8b949e;font-size:12px;cursor:pointer;}
+    .tab.active{background:#4fc3f7;color:#0d1117;border-color:#4fc3f7;font-weight:600;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+  </style>
+</head>
+<body>
+
+<h1>📊 Study Results Dashboard</h1>
+<p class="sub">CPSC 582 W2026 — Prototype Evaluation · Upload session JSON files to view results</p>
+
+<!-- Upload -->
+<div class="upload-area" onclick="document.getElementById('file-input').click()">
+  <div class="icon">📁</div>
+  <p>Click to upload session JSON files (up to 3)</p>
+  <p style="font-size:12px;margin-top:4px;">Files are processed locally — nothing is sent anywhere</p>
+</div>
+<input type="file" id="file-input" multiple accept=".json" onchange="loadFiles(event)"/>
+<div id="loaded-chips"></div>
+
+<!-- Results -->
+<div id="results" style="display:none;margin-top:24px;">
+
+  <div id="summary-grid">
+    <div class="sum-box"><div class="sum-val" id="sum-participants">0</div><div class="sum-label">Participants</div></div>
+    <div class="sum-box"><div class="sum-val" id="sum-duration">—</div><div class="sum-label">Avg Session Length</div></div>
+    <div class="sum-box"><div class="sum-val" id="sum-features">—</div><div class="sum-label">Avg Features Used</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('rq')">Research Questions</button>
+    <button class="tab" onclick="switchTab('tasks')">Task Times</button>
+    <button class="tab" onclick="switchTab('features')">Feature Usage</button>
+    <button class="tab" onclick="switchTab('sections')">Time per Section</button>
+    <button class="tab" onclick="switchTab('timeline')">Event Timeline</button>
+  </div>
+
+  <!-- RQ TAB -->
+  <div class="tab-content active" id="tab-rq">
+    <div class="card">
+      <h2>Research Question 1 — Linked View</h2>
+      <p class="rq-header">Did participants use the linked view between small multiples and the fatigue explorer?</p>
+      <div id="rq1-content"><p class="empty">No data loaded yet.</p></div>
+    </div>
+    <div class="card">
+      <h2>Research Question 2 — What-If Simulator</h2>
+      <p class="rq-header">Did participants interact with the What-If slider and how long did they spend on it?</p>
+      <div id="rq2-content"><p class="empty">No data loaded yet.</p></div>
+    </div>
+    <div class="card">
+      <h2>Research Question 3 — Comparison Chart</h2>
+      <p class="rq-header">Did participants engage with the comparison tool (tooltips, swap, exercise changes)?</p>
+      <div id="rq3-content"><p class="empty">No data loaded yet.</p></div>
+    </div>
+  </div>
+
+  <!-- TASKS TAB -->
+  <div class="tab-content" id="tab-tasks">
+    <div class="card">
+      <h2>Task Completion Times</h2>
+      <div id="task-table-wrap"></div>
+    </div>
+  </div>
+
+  <!-- FEATURES TAB -->
+  <div class="tab-content" id="tab-features">
+    <div class="card">
+      <h2>Feature Usage Across All Participants</h2>
+      <div id="feature-chart"></div>
+    </div>
+  </div>
+
+  <!-- SECTIONS TAB -->
+  <div class="tab-content" id="tab-sections">
+    <div class="card">
+      <h2>Time Spent per Section (seconds)</h2>
+      <div id="section-chart"></div>
+    </div>
+  </div>
+
+  <!-- TIMELINE TAB -->
+  <div class="tab-content" id="tab-timeline">
+    <div class="card">
+      <h2>Participant Selector</h2>
+      <div class="tab-bar" id="participant-tabs"></div>
+      <div id="timeline-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let sessions = [];
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function loadFiles(e) {
+  const files = Array.from(e.target.files);
+  let loaded = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        // avoid duplicates
+        if (!sessions.find(s => s.participantId === data.participantId)) {
+          sessions.push(data);
+        }
+        loaded++;
+        if (loaded === files.length) renderAll();
+      } catch(err) { alert('Error reading ' + file.name); }
+    };
+    reader.readAsText(file);
+  });
+}
+
+function renderAll() {
+  // chips
+  const chips = document.getElementById('loaded-chips');
+  chips.innerHTML = sessions.map(s => `<span class="session-chip loaded">✓ ${s.participantId} — ${Math.round(s.totalDurationSec/60)}min</span>`).join('');
+
+  document.getElementById('results').style.display = 'block';
+
+  // summary
+  document.getElementById('sum-participants').textContent = sessions.length;
+  const avgDur = Math.round(d3.mean(sessions, s => s.totalDurationSec));
+  document.getElementById('sum-duration').textContent = `${Math.floor(avgDur/60)}m ${avgDur%60}s`;
+  const avgFeat = Math.round(d3.mean(sessions, s => s.featuresUsed.length));
+  document.getElementById('sum-features').textContent = avgFeat;
+
+  renderRQ();
+  renderTasks();
+  renderFeatures();
+  renderSections();
+  renderTimeline();
+}
+
+function pill(val, yes_label='Yes', no_label='No') {
+  if (val === true || val === 'yes') return `<span class="pill yes">${yes_label}</span>`;
+  if (val === false || val === 'no') return `<span class="pill no">${no_label}</span>`;
+  return `<span class="pill partial">${val}</span>`;
+}
+
+function renderRQ() {
+  // RQ1: linked view
+  const rq1 = document.getElementById('rq1-content');
+  const rows1 = sessions.map(s => {
+    const usedLinked = s.featuresUsed.includes('linked_view_triggered');
+    const panelClicks = s.events.filter(e => e.type === 'panel_click').length;
+    const linkedEvents = s.events.filter(e => e.type === 'linked_view_used');
+    return `<tr>
+      <td>${s.participantId}</td>
+      <td>${panelClicks} clicks</td>
+      <td>${pill(usedLinked)}</td>
+      <td>${linkedEvents.length > 0 ? linkedEvents.map(e=>e.exercise).join(', ') : '—'}</td>
+      <td>${s.sectionsVisited['section-fatigue'] ? Math.round(s.sectionsVisited['section-fatigue'].totalTimeMs/1000)+'s' : '—'}</td>
+    </tr>`;
+  }).join('');
+  rq1.innerHTML = `<table><thead><tr><th>Participant</th><th>Panel Clicks</th><th>Linked View Triggered</th><th>Exercise(s)</th><th>Time in Fatigue Section</th></tr></thead><tbody>${rows1}</tbody></table>`;
+  const anyLinked = sessions.some(s => s.featuresUsed.includes('linked_view_triggered'));
+  rq1.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('linked_view_triggered')).length} of ${sessions.length} participants triggered the linked view between the progression panels and the fatigue explorer.</div>`;
+
+  // RQ2: what-if
+  const rq2 = document.getElementById('rq2-content');
+  const rows2 = sessions.map(s => {
+    const usedSlider = s.featuresUsed.includes('whatif_slider');
+    const t2 = s.tasks.find(t => t.id === 'T2');
+    const firstInteract = s.events.find(e => e.type === 'whatif_first_interaction');
+    return `<tr>
+      <td>${s.participantId}</td>
+      <td>${pill(usedSlider)}</td>
+      <td>${t2 ? t2.durationSec + 's' : '—'}</td>
+      <td>${s.sectionsVisited['section-whatif'] ? Math.round(s.sectionsVisited['section-whatif'].totalTimeMs/1000)+'s' : '—'}</td>
+      <td>${firstInteract ? Math.round(firstInteract.relativeMs/1000)+'s into session' : 'Never'}</td>
+    </tr>`;
+  }).join('');
+  rq2.innerHTML = `<table><thead><tr><th>Participant</th><th>Used Slider</th><th>Task 2 Duration</th><th>Total Time in Section</th><th>First Slider Use</th></tr></thead><tbody>${rows2}</tbody></table>`;
+  rq2.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('whatif_slider')).length} of ${sessions.length} participants interacted with the What-If slider during their session.</div>`;
+
+  // RQ3: comparison
+  const rq3 = document.getElementById('rq3-content');
+  const rows3 = sessions.map(s => {
+    const usedTooltip = s.featuresUsed.includes('tooltip_hover');
+    const swapped = s.featuresUsed.includes('compare_swapped');
+    const changedEx = s.featuresUsed.includes('compare_select_1') || s.featuresUsed.includes('compare_select_2');
+    const timeInSection = s.sectionsVisited['section-compare'] ? Math.round(s.sectionsVisited['section-compare'].totalTimeMs/1000) : 0;
+    return `<tr>
+      <td>${s.participantId}</td>
+      <td>${pill(usedTooltip)}</td>
+      <td>${pill(swapped)}</td>
+      <td>${pill(changedEx)}</td>
+      <td>${timeInSection}s</td>
+    </tr>`;
+  }).join('');
+  rq3.innerHTML = `<table><thead><tr><th>Participant</th><th>Used Tooltips</th><th>Used Swap</th><th>Changed Exercise</th><th>Time in Section</th></tr></thead><tbody>${rows3}</tbody></table>`;
+  rq3.innerHTML += `<div class="insight-box"><strong>Finding:</strong> ${sessions.filter(s=>s.featuresUsed.includes('tooltip_hover')).length} of ${sessions.length} participants hovered over data points in the comparison chart. ${sessions.filter(s=>s.featuresUsed.includes('compare_swapped')).length} used the swap button.</div>`;
+}
+
+function renderTasks() {
+  const taskIds = ['T1','T2','T3','T4'];
+  const taskNames = { T1:'Linked View', T2:'What-If', T3:'Comparison', T4:'Free Explore' };
+  const maxTime = d3.max(sessions.flatMap(s => s.tasks.map(t => t.durationSec))) || 300;
+  const wrap = document.getElementById('task-table-wrap');
+  let html = `<table><thead><tr><th>Task</th>${sessions.map(s=>`<th>${s.participantId}</th>`).join('')}<th>Average</th></tr></thead><tbody>`;
+  taskIds.forEach(tid => {
+    const times = sessions.map(s => { const t = s.tasks.find(x=>x.id===tid); return t ? t.durationSec : null; });
+    const avg = Math.round(d3.mean(times.filter(t=>t!==null)));
+    html += `<tr><td><strong>${taskNames[tid]}</strong></td>`;
+    times.forEach(t => {
+      html += `<td>${t !== null ? `<div class="bar-container"><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100,t/maxTime*100)}%;background:${t>240?'#f85149':t>120?'#ff9800':'#4fc3f7'}"></div></div><span style="font-size:12px;color:#8b949e;min-width:30px">${t}s</span></div>` : '—'}</td>`;
+    });
+    html += `<td style="color:#ff9800;font-weight:700">${avg}s</td></tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderFeatures() {
+  const allFeatures = [...new Set(sessions.flatMap(s => s.featuresUsed))].sort();
+  const featureLabels = {
+    replay_play: 'Replay — Play button',
+    replay_scrub: 'Replay — Scrubber',
+    whatif_slider: 'What-If — Slider',
+    whatif_exercise_select: 'What-If — Exercise select',
+    compare_select_1: 'Compare — Exercise 1 select',
+    compare_select_2: 'Compare — Exercise 2 select',
+    compare_swapped: 'Compare — Swap button',
+    filter_upper: 'Filter — Upper Body',
+    filter_lower: 'Filter — Lower Body',
+    filter_all: 'Filter — All',
+    small_multiples_click: 'Small Multiples — Panel click',
+    linked_view_triggered: 'Linked View — Triggered',
+    exercise_btn_click: 'Fatigue — Exercise button',
+    glossary_opened: 'Glossary — Opened',
+    rep_drop_click: 'Rep Drop — Bar click',
+    heatmap_click: 'Heatmap — Cell click',
+    ranking_click: 'Ranking — Bar click',
+    modal_closed: 'Modal — Closed',
+    tooltip_hover: 'Tooltip — Hovered',
+  };
+  const wrap = document.getElementById('feature-chart');
+  let html = '<table><thead><tr><th>Feature</th>';
+  sessions.forEach(s => html += `<th>${s.participantId}</th>`);
+  html += '<th>Count</th></tr></thead><tbody>';
+  allFeatures.forEach(f => {
+    const counts = sessions.map(s => s.featuresUsed.includes(f));
+    const total = counts.filter(Boolean).length;
+    html += `<tr><td>${featureLabels[f] || f}</td>`;
+    counts.forEach(c => html += `<td>${c ? '<span class="pill yes">✓</span>' : '<span class="pill no">✗</span>'}</td>`);
+    html += `<td style="color:#4fc3f7;font-weight:700">${total}/${sessions.length}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderSections() {
+  const sectionLabels = {
+    hero: 'Overview',
+    'section-replay': 'Replay',
+    'section-progression': 'Progression',
+    'section-fatigue': 'Fatigue Explorer',
+    'section-whatif': 'What-If',
+    'section-compare': 'Comparison',
+    'section-effort': 'Effort & Volume',
+    'section-heatmap': 'Heatmap',
+    'section-glossary': 'Glossary',
+  };
+  const allSections = Object.keys(sectionLabels);
+  const maxTime = d3.max(sessions.flatMap(s => allSections.map(sec => s.sectionsVisited[sec]?.totalTimeMs || 0))) || 1;
+  const wrap = document.getElementById('section-chart');
+  let html = '<table><thead><tr><th>Section</th>';
+  sessions.forEach(s => html += `<th>${s.participantId}</th>`);
+  html += '<th>Average</th></tr></thead><tbody>';
+  allSections.forEach(sec => {
+    const times = sessions.map(s => s.sectionsVisited[sec] ? Math.round(s.sectionsVisited[sec].totalTimeMs/1000) : 0);
+    const avg = Math.round(d3.mean(times));
+    html += `<tr><td>${sectionLabels[sec]}</td>`;
+    times.forEach(t => {
+      html += `<td><div class="bar-container"><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100,t/(maxTime/1000)*100)}%"></div></div><span style="font-size:11px;color:#8b949e;min-width:26px">${t}s</span></div></td>`;
+    });
+    html += `<td style="color:#ff9800;font-weight:700">${avg}s</td></tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderTimeline() {
+  const tabBar = document.getElementById('participant-tabs');
+  tabBar.innerHTML = sessions.map((s,i) => `<button class="tab ${i===0?'active':''}" onclick="showTimeline('${s.participantId}',this)">${s.participantId}</button>`).join('');
+  if (sessions.length > 0) showTimeline(sessions[0].participantId, tabBar.querySelector('.tab.active'));
+}
+
+function showTimeline(pid, btn) {
+  document.querySelectorAll('#participant-tabs .tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const s = sessions.find(x => x.participantId === pid);
+  if (!s) return;
+  const content = document.getElementById('timeline-content');
+  const events = s.events.filter(e => !['tooltip_hover'].includes(e.type)); // filter noise
+  content.innerHTML = `<div class="timeline">${events.map(e => {
+    const sec = Math.round(e.relativeMs/1000);
+    const m = Math.floor(sec/60), ss = sec%60;
+    const label = {
+      session_start: '🟢 Session started',
+      task_start: `▶ ${e.taskId} started`,
+      task_complete: `✅ ${e.taskId} complete (${e.durationSec}s)`,
+      section_enter: `→ Entered ${e.section}`,
+      section_exit: `← Left ${e.section}`,
+      panel_click: `🖱 Clicked panel: ${e.exercise}`,
+      linked_view_used: `🔗 Linked view triggered: ${e.exercise}`,
+      feature_click: `⚡ Feature: ${e.feature}`,
+      exercise_btn_click: `💪 Exercise btn: ${e.exercise}`,
+      glossary_click: `📖 Opened glossary`,
+      heatmap_click: `🟩 Clicked heatmap cell`,
+      ranking_click: `📊 Clicked ranking bar`,
+      rep_drop_click: `📉 Clicked rep drop bar`,
+      compare_swap: `⇄ Swapped comparison`,
+      whatif_first_interaction: `🔮 First What-If interaction`,
+      modal_closed: `✕ Closed modal`,
+      session_end: `🔴 Session ended (total: ${e.totalDurationSec}s)`,
+    }[e.type] || e.type;
+    return `<div class="timeline-event"><span class="timeline-time">${m}:${ss.toString().padStart(2,'0')}</span>${label}</div>`;
+  }).join('')}</div>`;
+}
+</script>
+</body>
+</html>
