@@ -878,43 +878,43 @@ const TASKS = [
   {
     id: 'T1',
     name: 'Task 1 — Linked View',
-    instruction: '👆 Scroll to the Progression section. Click on the Cable Chest Fly panel. Without clicking anything else, scroll down to the Fatigue Explorer section below. What changed?',
-    question: 'What did you notice changed in the Fatigue Explorer when you clicked the Cable Chest Fly panel? What connection does it show between the two charts?',
+    instruction: '👆 STEP 1: Scroll up to the Progression section. STEP 2: Click the Cable Chest Fly panel. STEP 3: Scroll down slowly — look at the Fatigue Explorer section. STEP 4: Click Done ✓ and answer the question.',
+    question: 'What changed in the Fatigue Explorer after you clicked Cable Chest Fly? What does the updated chart now show, and what connection does it reveal between the two sections?',
     section: 'section-progression'
   },
   {
     id: 'T2',
     name: 'Task 2 — What-If Simulator',
-    instruction: '🔮 Scroll to the What-If section. Select Bench Press. Drag the slider to 8 weeks ahead, note the number, then drag to 16 weeks ahead.',
-    question: 'What was the projected 1RM at 8 weeks? At 16 weeks? Does the 16-week projection feel realistic or too optimistic compared to what you saw in the progression charts?',
+    instruction: '🔮 STEP 1: You are already in the What-If section. STEP 2: Make sure "Bench Press" is selected. STEP 3: Drag the slider to 8 weeks — note the projected number. STEP 4: Drag to 16 weeks — note that number too. STEP 5: Click Done ✓.',
+    question: 'What was the projected 1RM at 8 weeks? At 16 weeks? Does the 16-week number feel realistic given what you saw in the progression charts earlier, or does it seem too high or too low?',
     section: 'section-whatif'
   },
   {
     id: 'T3',
     name: 'Task 3 — Comparison Chart',
-    instruction: '⚡ Scroll to the Compare section. Look at Bench Press vs Cable Chest Fly. Hover over the final data point of each line to see the exact values.',
-    question: 'Which exercise showed a bigger % change? What were the final values on hover? Does comparing by % change feel fair even though one uses ~200 lbs and the other ~70 lbs? Why or why not?',
+    instruction: '⚡ STEP 1: Scroll to the Compare section. STEP 2: Make sure the dropdowns show "Bench Press" and "Cable Chest Fly". STEP 3: Hover your mouse over the last dot on each colored line to see the exact % values. STEP 4: Click Done ✓.',
+    question: 'Which exercise showed a bigger % change by the end? What exact % values did you see on hover? Does comparing by % change feel fair even though Bench Press uses ~200 lbs and Cable Chest Fly uses ~70 lbs? Why or why not?',
     section: 'section-compare'
   },
   {
     id: 'T4',
     name: 'Task 4 — Heatmap',
-    instruction: '🟩 Scroll to the Heatmap section. Each row is an exercise, each column is a week. Green = gaining, red = stalled. Hover over cells for details.',
-    question: 'Which exercise had the most consistent green cells across all 7 weeks? Which week did gains seem to slow down the most? How did you find those answers?',
+    instruction: '🟩 STEP 1: Scroll to the Heatmap section. STEP 2: Look at the colored grid — each row is an exercise, each column is a week (Wk1–Wk7). STEP 3: Hover over individual cells to see exact % values. STEP 4: Find the most consistently green row and the week where most exercises look red or yellow. STEP 5: Click Done ✓.',
+    question: 'Which exercise had the most consistent gains across all 7 weeks? Which week did most exercises seem to stall or slow down? How did you figure that out — what did you look at?',
     section: 'section-heatmap'
   },
   {
     id: 'T5',
     name: 'Task 5 — Effort & Volume',
-    instruction: '📊 Scroll to the Effort & Volume section. The blue bars show total weekly volume, the orange line shows average RPE (effort). Hover over each week for exact numbers.',
-    question: 'Did total training volume go up, down, or stay the same across 7 weeks? What happened to RPE over the same period? Does it surprise you that those two trends went in different directions?',
+    instruction: '📊 STEP 1: Scroll to the Effort & Volume section. STEP 2: The blue bars show total weekly training volume. The orange line shows average RPE (effort level). STEP 3: Hover over each week dot on the orange line to see exact RPE values. STEP 4: Compare what happened to volume vs effort from Week 1 to Week 7. STEP 5: Click Done ✓.',
+    question: 'Did the total training volume go up, down, or stay roughly the same from Week 1 to Week 7? What happened to the RPE (effort) over the same period? Does it surprise you that those two things moved differently?',
     section: 'section-effort'
   },
   {
     id: 'T6',
     name: 'Task 6 — Free Exploration',
-    instruction: '🔍 Explore freely for 5 minutes. Try to find which exercise set the most personal records (⭐) over the 7 weeks using any part of the visualization.',
-    question: 'Which exercise do you think set the most personal records? How did you find that — which part of the visualization helped most? Was anything confusing or unclear?',
+    instruction: '🔍 You have 5 minutes to explore freely. Your goal: find which exercise set the most personal records (look for ⭐ gold stars). You can use ANY part of the visualization — the replay, the panels, the heatmap, anywhere. Click Done ✓ when you have an answer.',
+    question: 'Which exercise do you think set the most personal records? How did you find that answer — which part of the visualization helped you most? Was anything confusing or hard to use during your exploration?',
     section: 'hero'
   },
 ];
@@ -936,21 +936,20 @@ function showAnswerPopup(task) {
   document.getElementById('answer-task-label').textContent = task.name;
   document.getElementById('answer-question').textContent = task.question;
   document.getElementById('answer-textarea').value = '';
-  document.getElementById('answer-overlay').classList.add('open');
+  document.getElementById('answer-overlay').style.display = 'flex';
 }
 
 function submitAnswer() {
   const answer = document.getElementById('answer-textarea').value.trim();
   if (!answer) { alert('Please type your answer before continuing.'); return; }
   const task = TASKS[session.currentTaskIdx];
-  // save answer into the last task entry
   const lastTask = session.tasks[session.tasks.length - 1];
   if (lastTask && lastTask.id === task.id) {
     lastTask.answer = answer;
     lastTask.completed = selectedSuccess || 'not-marked';
   }
   logEvent('task_answer', { taskId: task.id, answer, completed: selectedSuccess });
-  document.getElementById('answer-overlay').classList.remove('open');
+  document.getElementById('answer-overlay').style.display = 'none';
   advanceTask();
 }
 
@@ -1017,8 +1016,10 @@ function advanceTask() {
   // Timer
   session.timerInterval = setInterval(() => {
     const sec = Math.round((Date.now() - session.taskStartTime) / 1000);
-    const m = Math.floor(sec / 60), s = sec % 60;
-    document.getElementById('study-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    const ss = s < 10 ? '0' + s : '' + s;
+    document.getElementById('study-timer').textContent = m + ':' + ss;
   }, 500);
   logEvent('task_start', { taskId: task.id });
 }
