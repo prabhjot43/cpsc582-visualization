@@ -861,12 +861,12 @@ function setupNav(){
   <div id="answer-box" style="background:#161b22;border:1px solid #4fc3f7;border-radius:12px;padding:32px;max-width:580px;width:92vw;">
     <div id="answer-task-label" style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#4fc3f7;margin-bottom:8px;"></div>
     <div id="answer-question" style="font-size:15px;font-weight:700;color:#e6edf3;margin-bottom:6px;line-height:1.5;"></div>
-    <div style="font-size:12px;color:#8b949e;margin-bottom:16px;font-style:italic;">Type your answer below — be as specific as you can.</div>
+    <div style="font-size:12px;color:#8b949e;margin-bottom:16px;font-style:italic;">Select how it went and optionally type your answer below.</div>
     <div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Did you complete the task successfully?</div>
     <div style="display:flex;gap:12px;margin-bottom:16px;">
-      <button class="success-btn" onclick="selectSuccess('yes')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">✓ Yes</button>
-      <button class="success-btn" onclick="selectSuccess('partial')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">~ Partially</button>
-      <button class="success-btn" onclick="selectSuccess('no')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">✗ No</button>
+      <button id="btn-yes" onclick="selectSuccess('yes')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">✓ Yes</button>
+      <button id="btn-partial" onclick="selectSuccess('partial')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">~ Partially</button>
+      <button id="btn-no" onclick="selectSuccess('no')" style="flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;">✗ No</button>
     </div>
     <textarea id="answer-textarea" placeholder="Type your answer here..." style="width:100%;padding:12px;border-radius:8px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:13px;font-family:inherit;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:16px;"></textarea>
     <button onclick="submitAnswer()" style="width:100%;padding:12px;border-radius:8px;border:none;background:#4fc3f7;color:#0d1117;font-size:14px;font-weight:700;cursor:pointer;">Submit & Continue →</button>
@@ -923,11 +923,12 @@ let selectedSuccess = null;
 
 function selectSuccess(val) {
   selectedSuccess = val;
-  const btns = document.querySelectorAll('.success-btn');
-  btns.forEach(b => { b.className = 'success-btn'; });
-  if (val === 'yes') btns[0].classList.add('selected-yes');
-  if (val === 'partial') btns[1].classList.add('selected-partial');
-  if (val === 'no') btns[2].classList.add('selected-no');
+  document.getElementById('btn-yes').style.cssText = 'flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;';
+  document.getElementById('btn-partial').style.cssText = 'flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;';
+  document.getElementById('btn-no').style.cssText = 'flex:1;padding:8px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:13px;font-weight:600;cursor:pointer;';
+  if (val === 'yes') document.getElementById('btn-yes').style.cssText = 'flex:1;padding:8px;border-radius:6px;border:2px solid #81c784;background:rgba(129,199,132,0.15);color:#81c784;font-size:13px;font-weight:600;cursor:pointer;';
+  if (val === 'partial') document.getElementById('btn-partial').style.cssText = 'flex:1;padding:8px;border-radius:6px;border:2px solid #ff9800;background:rgba(255,152,0,0.15);color:#ff9800;font-size:13px;font-weight:600;cursor:pointer;';
+  if (val === 'no') document.getElementById('btn-no').style.cssText = 'flex:1;padding:8px;border-radius:6px;border:2px solid #f85149;background:rgba(248,81,73,0.15);color:#f85149;font-size:13px;font-weight:600;cursor:pointer;';
 }
 
 function showAnswerPopup(task) {
@@ -941,11 +942,14 @@ function showAnswerPopup(task) {
 
 function submitAnswer() {
   const answer = document.getElementById('answer-textarea').value.trim();
-  if (!answer) { alert('Please type your answer before continuing.'); return; }
+  if (!selectedSuccess && !answer) { 
+    alert('Please select Yes / Partially / No, or type your answer before continuing.'); 
+    return; 
+  }
   const task = TASKS[session.currentTaskIdx];
   const lastTask = session.tasks[session.tasks.length - 1];
   if (lastTask && lastTask.id === task.id) {
-    lastTask.answer = answer;
+    lastTask.answer = answer || '(no written answer)';
     lastTask.completed = selectedSuccess || 'not-marked';
   }
   logEvent('task_answer', { taskId: task.id, answer, completed: selectedSuccess });
