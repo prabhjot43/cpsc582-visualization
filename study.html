@@ -839,42 +839,39 @@ function setupNav(){
 <!-- STUDY BOTTOM BAR -->
 <div id="study-bar" style="display:none">
   <div style="flex:1;min-width:0;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
       <div class="sb-label" style="white-space:nowrap;background:#4fc3f7;color:#0d1117;padding:2px 8px;border-radius:4px;font-weight:700;">Task <span id="study-task-num">1</span> of 6</div>
-      <div id="study-task" style="font-size:14px;font-weight:700;color:#4fc3f7;"></div>
+      <div id="study-task" style="font-size:13px;font-weight:700;color:#4fc3f7;"></div>
     </div>
-    <div id="study-instruction" style="font-size:12px;color:#c9d1d9;line-height:1.5;max-width:900px;margin-bottom:6px;"></div>
-    <div style="display:flex;align-items:flex-start;gap:8px;">
-      <span style="font-size:11px;color:#ff9800;font-weight:700;white-space:nowrap;padding-top:1px;">ANSWER:</span>
-      <div id="study-question" style="font-size:12px;color:#ff9800;line-height:1.5;max-width:860px;font-style:italic;"></div>
+    <div id="study-instruction" style="font-size:12px;color:#c9d1d9;line-height:1.4;margin-bottom:4px;"></div>
+    <div id="study-question-bar" style="font-size:12px;color:#ff9800;line-height:1.4;font-style:italic;"></div>
+    <!-- inline answer area, hidden until Done is clicked -->
+    <div id="inline-answer-area" style="display:none;margin-top:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+        <button id="btn-yes" onclick="selectSuccess('yes')" style="padding:5px 14px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;">✓ Yes</button>
+        <button id="btn-partial" onclick="selectSuccess('partial')" style="padding:5px 14px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;">~ Partially</button>
+        <button id="btn-no" onclick="selectSuccess('no')" style="padding:5px 14px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;">✗ No</button>
+        <input id="answer-textarea" type="text" placeholder="Type your answer here..." style="flex:1;min-width:200px;padding:5px 10px;border-radius:6px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:12px;"/>
+        <button onclick="submitAnswer()" style="padding:5px 16px;border-radius:6px;border:none;background:#81c784;color:#0d1117;font-size:12px;font-weight:700;cursor:pointer;">Submit →</button>
+      </div>
     </div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:center;min-width:70px;">
+  <div style="display:flex;flex-direction:column;align-items:center;min-width:60px;">
     <div class="sb-label">Timer</div>
-    <div id="study-timer" style="font-size:20px;font-weight:700;color:#ff9800;font-family:monospace;">0:00</div>
+    <div id="study-timer" style="font-size:18px;font-weight:700;color:#ff9800;font-family:monospace;">0:00</div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <span id="study-participant" style="color:#484f58;font-size:12px;"></span>
-    <button id="study-next" onclick="nextTask()" style="padding:10px 20px;border-radius:6px;border:none;background:#4fc3f7;color:#0d1117;font-size:13px;font-weight:700;cursor:pointer;">Done ✓</button>
-    <button id="study-end" onclick="endStudy()" style="padding:10px 20px;border-radius:6px;border:1px solid #f85149;background:transparent;color:#f85149;font-size:13px;font-weight:700;cursor:pointer;">End & Download</button>
+    <button id="study-next" onclick="nextTask()" style="padding:8px 18px;border-radius:6px;border:none;background:#4fc3f7;color:#0d1117;font-size:12px;font-weight:700;cursor:pointer;">Done ✓</button>
+    <button id="study-end" onclick="endStudy()" style="padding:8px 18px;border-radius:6px;border:1px solid #f85149;background:transparent;color:#f85149;font-size:12px;font-weight:700;cursor:pointer;">End & Download</button>
   </div>
 </div>
 
-<!-- ANSWER POPUP - small, non-blocking -->
-<div id="answer-overlay" style="display:none;position:fixed;bottom:140px;right:24px;z-index:10000;width:420px;">
-  <div style="background:#161b22;border:1px solid #4fc3f7;border-radius:12px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
-    <div id="answer-task-label" style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#4fc3f7;margin-bottom:6px;"></div>
-    <div id="answer-question" style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:12px;line-height:1.5;"></div>
-    <div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Did you complete the task?</div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <button id="btn-yes" onclick="selectSuccess('yes')" style="flex:1;padding:7px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;">✓ Yes</button>
-      <button id="btn-partial" onclick="selectSuccess('partial')" style="flex:1;padding:7px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;">~ Partially</button>
-      <button id="btn-no" onclick="selectSuccess('no')" style="flex:1;padding:7px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;">✗ No</button>
-    </div>
-    <textarea id="answer-textarea" placeholder="Type your answer here..." style="width:100%;padding:10px;border-radius:8px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:12px;font-family:inherit;resize:vertical;min-height:80px;line-height:1.5;margin-bottom:12px;"></textarea>
-    <button onclick="submitAnswer()" style="width:100%;padding:10px;border-radius:8px;border:none;background:#4fc3f7;color:#0d1117;font-size:13px;font-weight:700;cursor:pointer;">Submit & Next Task →</button>
-  </div>
-</div>
+<!-- hidden answer overlay div kept for compatibility -->
+<div id="answer-overlay" style="display:none;"></div>
+<div id="answer-task-label" style="display:none;"></div>
+<div id="answer-question" style="display:none;"></div>
+<div id="answer-box" style="display:none;"></div>
 
 <script>
 const TASKS = [
@@ -946,9 +943,9 @@ function showAnswerPopup(task) {
 
 function submitAnswer() {
   const answer = document.getElementById('answer-textarea').value.trim();
-  if (!selectedSuccess && !answer) { 
-    alert('Please select Yes / Partially / No, or type your answer before continuing.'); 
-    return; 
+  if (!selectedSuccess && !answer) {
+    alert('Please select Yes / Partially / No, or type your answer before continuing.');
+    return;
   }
   const task = TASKS[session.currentTaskIdx];
   const lastTask = session.tasks[session.tasks.length - 1];
@@ -957,7 +954,8 @@ function submitAnswer() {
     lastTask.completed = selectedSuccess || 'not-marked';
   }
   logEvent('task_answer', { taskId: task.id, answer, completed: selectedSuccess });
-  document.getElementById('answer-overlay').style.display = 'none';
+  document.getElementById('inline-answer-area').style.display = 'none';
+  document.getElementById('study-next').style.display = 'block';
   advanceTask();
 }
 
@@ -987,7 +985,6 @@ function startStudy() {
 }
 
 function nextTask() {
-  // When Next Task is clicked, save time and show answer popup
   if (session.currentTaskIdx >= 0 && session.taskStartTime) {
     const elapsed = Math.round((Date.now() - session.taskStartTime) / 1000);
     const task = TASKS[session.currentTaskIdx];
@@ -995,8 +992,14 @@ function nextTask() {
     logEvent('task_complete', { taskId: task.id, durationSec: elapsed });
     clearInterval(session.timerInterval);
     document.getElementById('study-timer').textContent = '—';
-    // Show answer popup before advancing
-    showAnswerPopup(task);
+    // show inline answer area
+    document.getElementById('inline-answer-area').style.display = 'block';
+    document.getElementById('study-next').style.display = 'none';
+    selectedSuccess = null;
+    document.getElementById('answer-textarea').value = '';
+    document.getElementById('btn-yes').style.cssText = 'padding:5px 14px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;';
+    document.getElementById('btn-partial').style.cssText = 'padding:5px 14px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;';
+    document.getElementById('btn-no').style.cssText = 'padding:5px 14px;border-radius:6px;border:2px solid #30363d;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;';
     return;
   }
   advanceTask();
@@ -1017,8 +1020,10 @@ function advanceTask() {
   session.taskStartTime = Date.now();
   document.getElementById('study-task').textContent = task.name;
   document.getElementById('study-instruction').textContent = task.instruction;
-  document.getElementById('study-question').textContent = task.question;
+  document.getElementById('study-question-bar').textContent = '👉 ' + task.question;
   document.getElementById('study-task-num').textContent = session.currentTaskIdx + 1;
+  document.getElementById('inline-answer-area').style.display = 'none';
+  document.getElementById('study-next').style.display = 'block';
   // Scroll to relevant section
   const el = document.getElementById(task.section);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
