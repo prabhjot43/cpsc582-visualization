@@ -886,9 +886,11 @@ const exImgTip=document.getElementById('ex-img-tip');
 const exImgSrc=document.getElementById('ex-img-src');
 const exImgLabel=document.getElementById('ex-img-label');
 let currentExImg='';
+let hideExImgTimer=null;
 function showExImg(ex,e){
   const url=EX_IMAGES[ex];
   if(!url){exImgTip.style.opacity=0;return;}
+  clearTimeout(hideExImgTimer);
   currentExImg=ex;
   exImgSrc.src=url;
   exImgLabel.textContent=ex;
@@ -897,8 +899,11 @@ function showExImg(ex,e){
   exImgTip.style.opacity=1;
 }
 function hideExImg(){
-  setTimeout(()=>{exImgTip.style.opacity=0;},300);
+  hideExImgTimer=setTimeout(()=>{exImgTip.style.opacity=0;},400);
 }
+// Keep tooltip visible when mouse moves over it
+exImgTip.addEventListener('mouseenter',()=>clearTimeout(hideExImgTimer));
+exImgTip.addEventListener('mouseleave',()=>{hideExImgTimer=setTimeout(()=>{exImgTip.style.opacity=0;},200);});
 function enlargeExImg(){
   const url=EX_IMAGES[currentExImg];
   if(!url) return;
