@@ -97,7 +97,7 @@
     .term:hover{background:rgba(79,195,247,0.1);border-radius:3px;}
 
     /* EXERCISE IMAGE TOOLTIP */
-    #ex-img-tip{position:fixed;background:#161b22;border:1px solid #4fc3f7;border-radius:8px;padding:0;pointer-events:auto;opacity:0;transition:opacity .15s;z-index:998;overflow:hidden;width:260px;box-shadow:0 8px 24px rgba(0,0,0,0.6);cursor:pointer;}
+    #ex-img-tip{position:fixed;background:#161b22;border:1px solid #4fc3f7;border-radius:8px;padding:0;pointer-events:none;opacity:0;transition:opacity .15s;z-index:998;overflow:hidden;width:260px;box-shadow:0 8px 24px rgba(0,0,0,0.6);cursor:pointer;}
     #ex-img-tip img{width:260px;height:160px;object-fit:contain;display:block;background:#0d1117;}
     #ex-img-tip .ex-img-label{font-size:11px;color:#8b949e;padding:6px 10px;text-align:center;}
     #ex-img-tip .ex-img-hint{font-size:10px;color:#484f58;padding:0 10px 8px;text-align:center;}
@@ -889,7 +889,7 @@ let currentExImg='';
 let hideExImgTimer=null;
 function showExImg(ex,e){
   const url=EX_IMAGES[ex];
-  if(!url){exImgTip.style.opacity=0;return;}
+  if(!url) return;
   clearTimeout(hideExImgTimer);
   currentExImg=ex;
   exImgSrc.src=url;
@@ -897,23 +897,20 @@ function showExImg(ex,e){
   exImgTip.style.left=(e.clientX+16)+'px';
   exImgTip.style.top=Math.max(10,e.clientY-90)+'px';
   exImgTip.style.opacity=1;
+  exImgTip.style.pointerEvents='auto';
+}
+function hideExImgNow(){
+  exImgTip.style.opacity=0;
+  exImgTip.style.pointerEvents='none';
 }
 function hideExImg(){
-  hideExImgTimer=setTimeout(()=>{exImgTip.style.opacity=0;},150);
+  hideExImgTimer=setTimeout(hideExImgNow,150);
 }
-// Keep visible when hovering the tooltip itself so user can click it
+// Keep visible when hovering tooltip itself so user can click it
 exImgTip.addEventListener('mouseenter',()=>clearTimeout(hideExImgTimer));
-exImgTip.addEventListener('mouseleave',()=>{exImgTip.style.opacity=0;});
-// Hide immediately on scroll or when mouse leaves the exercise buttons container
-window.addEventListener('scroll',()=>{exImgTip.style.opacity=0;},true);
-document.addEventListener('mousemove',e=>{
-  const btns=document.getElementById('exercise-btns');
-  const tip=document.getElementById('ex-img-tip');
-  if(!btns||!tip) return;
-  const overBtns=btns.contains(e.target);
-  const overTip=tip.contains(e.target);
-  if(!overBtns&&!overTip){clearTimeout(hideExImgTimer);exImgTip.style.opacity=0;}
-});
+exImgTip.addEventListener('mouseleave',hideExImgNow);
+// Hide on scroll
+window.addEventListener('scroll',hideExImgNow,true);
 function enlargeExImg(){
   const url=EX_IMAGES[currentExImg];
   if(!url) return;
