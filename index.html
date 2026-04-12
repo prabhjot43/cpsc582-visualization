@@ -389,6 +389,9 @@ d3.json('data.json').then(raw=>{
   buildExerciseBtns(); updateFatigue(activeEx); buildRepDrop();
   buildRPEVolume(); buildHeatmap(); buildWhatIfSelects(); buildCompareSelects();
   updateWhatIf(); updateComparison(); setupModal(); setupNav();
+}).catch(err=>{
+  document.getElementById('stats').innerHTML='<div style="color:#f85149;font-size:13px;padding:20px">⚠️ Could not load data.json — make sure it is uploaded to your GitHub repo alongside index.html. Error: '+err+'</div>';
+  console.error('data.json load failed:',err);
 });
 
 // ── Stats ────────────────────────────────────────────────────────────────────
