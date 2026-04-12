@@ -101,12 +101,7 @@
     #ex-img-tip.visible{opacity:1;visibility:visible;pointer-events:auto;}
     #ex-img-tip img{width:260px;height:160px;object-fit:contain;display:block;background:#0d1117;}
     #ex-img-tip .ex-img-label{font-size:11px;color:#8b949e;padding:6px 10px;text-align:center;}
-    #ex-img-tip .ex-img-hint{font-size:10px;color:#484f58;padding:0 10px 8px;text-align:center;}
-    /* Enlarged exercise image modal */
-    #ex-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10001;align-items:center;justify-content:center;cursor:pointer;}
-    #ex-modal.open{display:flex;}
-    #ex-modal img{max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;}
-    #ex-modal-label{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:#8b949e;font-size:13px;}
+
 
     svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
     footer{text-align:center;padding:40px;color:#484f58;font-size:12px;}
@@ -212,7 +207,6 @@
 
 <!-- ANIMATED REPLAY -->
 <section id="section-replay">
-  <div class="section-label">FEATURE 1 — ANIMATED REPLAY</div>
   <h2>Watch your training unfold in real time</h2>
   <p class="section-desc">Hit play to animate all 13 exercises session by session. Gold stars mark personal records. Use the filter to focus on one exercise, or watch all at once.</p>
   <div id="replay-controls">
@@ -245,7 +239,6 @@
 
 <!-- PROGRESSION SMALL MULTIPLES -->
 <section id="section-progression">
-  <div class="section-label">DESIGN CHALLENGE 1</div>
   <h2>How did each exercise progress over 9 weeks?</h2>
   <p class="section-desc">Full 9-week view with error bars and trend lines. <strong style="color:#ff9800">Click any panel</strong> to link it to the fatigue explorer below. Double-click to enlarge. Panels sorted by % improvement.</p>
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;">
@@ -268,7 +261,6 @@
 
 <!-- FATIGUE EXPLORER -->
 <section id="section-fatigue">
-  <div class="section-label">DESIGN CHALLENGE 2</div>
   <h2>Fatigue Explorer</h2>
   <p class="section-desc">Click any panel above or select below. The summary card updates automatically. Dashed lines mark weight increases.</p>
   <div id="summary-card">
@@ -291,7 +283,6 @@
 
 <!-- WHAT-IF SIMULATOR -->
 <section id="section-whatif">
-  <div class="section-label">FEATURE 2 — WHAT-IF SIMULATOR</div>
   <h2>If your trend continues… what could you lift?</h2>
   <p class="section-desc">Project any exercise's estimated 1RM forward in time using your current trend line. Adjust the number of weeks to see different scenarios.</p>
   <div id="whatif-wrap">
@@ -315,7 +306,6 @@
 
 <!-- COMPARISON MODE -->
 <section id="section-compare">
-  <div class="section-label">FEATURE 3 — EXERCISE COMPARISON</div>
   <h2>Compare any two exercises side by side</h2>
   <p class="section-desc">Select two exercises to overlay their normalized progression (% change from Week 1) on the same chart. Hover for exact values.</p>
   <div id="compare-selects">
@@ -333,7 +323,6 @@
 
 <!-- EFFORT & VOLUME -->
 <section id="section-effort">
-  <div class="section-label">DESIGN CHALLENGE 3</div>
   <h2>Did effort and volume move together?</h2>
   <p class="section-desc">Two separate charts for clarity. <strong style="color:#4fc3f7">Weekly Volume</strong> shows total lbs lifted each week. <strong style="color:#ff9800">Average <span class="term" data-def="RPE (Rate of Perceived Exertion): a 1–10 scale of how hard a set felt. RPE 10 = maximum effort, nothing left. RPE 7 = 3 reps still in the tank.">RPE</span></strong> shows how hard those sessions felt on a 1–10 scale.</p>
   <div class="chart-wrap">
@@ -349,7 +338,6 @@
 
 <!-- HEATMAP -->
 <section id="section-heatmap">
-  <div class="section-label">DESIGN CHALLENGE 3 · HEATMAP</div>
   <h2>When were the gains actually happening?</h2>
   <p class="section-desc">% change from Week 1 per exercise per week. Click any cell to jump to that exercise's fatigue chart.</p>
   <div class="chart-wrap"><div id="heatmap-chart"></div></div>
@@ -360,15 +348,11 @@
 
 <footer>CPSC 582 W2026 · Personal Strength Training Dataset · Jan 22 – Mar 20, 2026</footer>
 <div class="tooltip" id="tooltip"></div>
-<div id="ex-img-tip" onclick="enlargeExImg()">
+<div id="ex-img-tip">
   <img id="ex-img-src" src="" alt=""/>
   <div class="ex-img-label" id="ex-img-label"></div>
-  <div class="ex-img-hint">click to enlarge</div>
 </div>
-<div id="ex-modal" onclick="document.getElementById('ex-modal').classList.remove('open')">
-  <img id="ex-modal-img" src="" alt=""/>
-  <div id="ex-modal-label"></div>
-</div>
+
 <div id="modal-overlay">
   <div id="modal-box">
     <button id="modal-close">×</button>
@@ -910,14 +894,7 @@ exImgTip.addEventListener('mouseenter',()=>clearTimeout(hideExImgTimer));
 exImgTip.addEventListener('mouseleave',hideExImgNow);
 // Hide on scroll
 window.addEventListener('scroll',hideExImgNow,true);
-function enlargeExImg(){
-  const url=EX_IMAGES[currentExImg];
-  if(!url) return;
-  document.getElementById('ex-modal-img').src=url;
-  document.getElementById('ex-modal-label').textContent=currentExImg;
-  document.getElementById('ex-modal').classList.add('open');
-  exImgTip.style.opacity=0;
-}
+
 // Attach to exercise buttons
 function buildExerciseBtns(){
   const bg=d3.select('#exercise-btns');
@@ -974,6 +951,32 @@ function setupNav(){
   const links=document.querySelectorAll('nav a');
   window.addEventListener('scroll',()=>{let cur='';secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id;});links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));});
 }
+
+// ── AXIS LABEL GLOSSARY TOOLTIPS ─────────────────────────────────────────────
+const AXIS_DEFS={
+  'Est. 1RM (lbs)':'Estimated 1RM: the max weight you could theoretically lift for one rep, estimated from your working sets using the Epley formula: weight × (1 + reps/30).',
+  'Est. 1RM':'Estimated 1RM: the max weight you could theoretically lift for one rep, estimated from your working sets using the Epley formula: weight × (1 + reps/30).',
+  'Average RPE (1–10)':'RPE (Rate of Perceived Exertion): a 1–10 scale of how hard a set felt. RPE 10 = maximum effort, nothing left in the tank. RPE 7 = roughly 3 reps still remaining.',
+  'Average RPE':'RPE (Rate of Perceived Exertion): a 1–10 scale of how hard a set felt. RPE 10 = maximum effort, nothing left in the tank. RPE 7 = roughly 3 reps still remaining.',
+  'Total Volume (lbs)':'Set Volume: total work done each week = sum of (weight × reps) across all sets and exercises.',
+  'Weekly Volume (lbs)':'Set Volume: total work done each week = sum of (weight × reps) across all sets and exercises.',
+  '% Change from Start':'Normalized % Change: each exercise's Week 1 value is the baseline (0%). All subsequent values show % change from that point, allowing fair comparison across exercises.',
+};
+function attachAxisTooltips(){
+  document.querySelectorAll('svg text').forEach(el=>{
+    const txt=el.textContent.trim();
+    const def=AXIS_DEFS[txt];
+    if(def){
+      el.style.fill='#4fc3f7';
+      el.style.cursor='help';
+      el.style.textDecoration='underline';
+      el.addEventListener('mousemove',e=>showTip(def,e));
+      el.addEventListener('mouseleave',hideTip);
+    }
+  });
+}
+// Run after all charts are built — short delay ensures all SVGs are in DOM
+setTimeout(attachAxisTooltips, 800);
 </script>
 </body>
 </html>
