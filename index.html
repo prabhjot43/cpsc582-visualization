@@ -97,7 +97,7 @@
     .term:hover{background:rgba(79,195,247,0.1);border-radius:3px;}
 
     /* EXERCISE IMAGE TOOLTIP */
-    #ex-img-tip{position:fixed;background:#161b22;border:1px solid #4fc3f7;border-radius:8px;padding:0;pointer-events:none;opacity:0;transition:opacity .15s;z-index:998;overflow:hidden;width:260px;box-shadow:0 8px 24px rgba(0,0,0,0.6);}
+    #ex-img-tip{position:fixed;background:#161b22;border:1px solid #4fc3f7;border-radius:8px;padding:0;pointer-events:auto;opacity:0;transition:opacity .15s;z-index:998;overflow:hidden;width:260px;box-shadow:0 8px 24px rgba(0,0,0,0.6);cursor:pointer;}
     #ex-img-tip img{width:260px;height:160px;object-fit:contain;display:block;background:#0d1117;}
     #ex-img-tip .ex-img-label{font-size:11px;color:#8b949e;padding:6px 10px;text-align:center;}
     #ex-img-tip .ex-img-hint{font-size:10px;color:#484f58;padding:0 10px 8px;text-align:center;}
@@ -891,17 +891,13 @@ function showExImg(ex,e){
   if(!url){exImgTip.style.opacity=0;return;}
   currentExImg=ex;
   exImgSrc.src=url;
-  exImgSrc.onerror=()=>{exImgTip.style.opacity=0;};
   exImgLabel.textContent=ex;
   exImgTip.style.left=(e.clientX+16)+'px';
   exImgTip.style.top=Math.max(10,e.clientY-90)+'px';
   exImgTip.style.opacity=1;
-  exImgTip.style.pointerEvents='auto';
-  exImgTip.style.cursor='pointer';
 }
 function hideExImg(){
-  // small delay so user can click the tooltip
-  setTimeout(()=>{exImgTip.style.opacity=0;exImgTip.style.pointerEvents='none';},200);
+  setTimeout(()=>{exImgTip.style.opacity=0;},300);
 }
 function enlargeExImg(){
   const url=EX_IMAGES[currentExImg];
