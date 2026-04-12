@@ -899,11 +899,21 @@ function showExImg(ex,e){
   exImgTip.style.opacity=1;
 }
 function hideExImg(){
-  hideExImgTimer=setTimeout(()=>{exImgTip.style.opacity=0;},400);
+  hideExImgTimer=setTimeout(()=>{exImgTip.style.opacity=0;},150);
 }
-// Keep tooltip visible when mouse moves over it
+// Keep visible when hovering the tooltip itself so user can click it
 exImgTip.addEventListener('mouseenter',()=>clearTimeout(hideExImgTimer));
-exImgTip.addEventListener('mouseleave',()=>{hideExImgTimer=setTimeout(()=>{exImgTip.style.opacity=0;},200);});
+exImgTip.addEventListener('mouseleave',()=>{exImgTip.style.opacity=0;});
+// Hide immediately on scroll or when mouse leaves the exercise buttons container
+window.addEventListener('scroll',()=>{exImgTip.style.opacity=0;},true);
+document.addEventListener('mousemove',e=>{
+  const btns=document.getElementById('exercise-btns');
+  const tip=document.getElementById('ex-img-tip');
+  if(!btns||!tip) return;
+  const overBtns=btns.contains(e.target);
+  const overTip=tip.contains(e.target);
+  if(!overBtns&&!overTip){clearTimeout(hideExImgTimer);exImgTip.style.opacity=0;}
+});
 function enlargeExImg(){
   const url=EX_IMAGES[currentExImg];
   if(!url) return;
