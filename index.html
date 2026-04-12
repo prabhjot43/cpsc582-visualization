@@ -36,6 +36,7 @@
 
     /* SMALL MULTIPLES */
     #sm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+    #sm-grid-replay{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
     .sm-panel{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:8px;cursor:pointer;transition:border-color .18s,transform .15s,box-shadow .18s;position:relative;}
     .sm-panel:hover{border-color:#4fc3f7;transform:scale(1.04);box-shadow:0 0 12px rgba(79,195,247,0.2);}
     .sm-panel.selected{border-color:#ff9800!important;box-shadow:0 0 14px rgba(255,152,0,0.35)!important;}
@@ -471,6 +472,22 @@ function scrubTo(idx){
       prStar.attr('opacity',0);
     }
   });
+  // Update focus panel if one is showing
+  if(window._focusPanel){
+    const fp=window._focusPanel;
+    // update focus panel
+    const fpBd=fp.bd;
+    const fpVis=fpBd.filter(d=>visibleDates.includes(d.dateStr));
+    if(fpVis.length>0){
+      const fpLine=d3.line().x(d=>fp.xs(d.date)).y(d=>fp.ys(d.max1rm)).curve(d3.curveMonotoneX);
+      fp.animPath.attr('d',fpLine(fpVis));
+      const fpLast=fpVis[fpVis.length-1];
+      fp.curDot.attr('cx',fp.xs(fpLast.date)).attr('cy',fp.ys(fpLast.max1rm)).attr('opacity',1);
+      if(fpLast.max1rm>(prLog[fp.ex]||0)&&prLog[fp.ex]>0){
+        fp.prStar.attr('x',fp.xs(fpLast.date)).attr('y',fp.ys(fpLast.max1rm)-12).attr('opacity',1);
+      } else {fp.prStar.attr('opacity',0);}
+    } else {fp.animPath.attr('d','');fp.curDot.attr('opacity',0);fp.prStar.attr('opacity',0);}
+  }
   // PR feed
   if(newPRs.length>0){
     const feed=document.getElementById('pr-feed');
@@ -945,8 +962,18 @@ function buildReplayFocusChart(ex){
   const curDot=svg.append('circle').attr('r',8).attr('fill',color).attr('stroke','#fff').attr('stroke-width',2).attr('opacity',0);
   const prStar=svg.append('text').attr('text-anchor','middle').attr('font-size',20).attr('fill',GOLD).attr('opacity',0).text('\u2b50');
   // override replayPanels entry for this exercise
-  replayPanels[ex]={svg,xs,ys,animPath,curDot,prStar,line:fullLine,bd,color};
-  scrubTo(replayIdx);
+  // Store in separate variable so original panel data is preserved
+  window._focusPanel={ex,svg,xs,ys,animPath,curDot,prStar,bd,color};
+  // Update the focus panel to current position
+  const fp=window._focusPanel;
+  const visibleDates=allDates.slice(0,replayIdx+1);
+  const visible=fp.bd.filter(d=>visibleDates.includes(d.dateStr));
+  if(visible.length>0){
+    const line=d3.line().x(d=>fp.xs(d.date)).y(d=>fp.ys(d.max1rm)).curve(d3.curveMonotoneX);
+    fp.animPath.attr('d',line(visible));
+    const last=visible[visible.length-1];
+    fp.curDot.attr('cx',fp.xs(last.date)).attr('cy',fp.ys(last.max1rm)).attr('opacity',1);
+  }
 }
 
 function setupNav(){
