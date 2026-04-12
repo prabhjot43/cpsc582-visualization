@@ -483,8 +483,11 @@ function scrubTo(idx){
       fp.animPath.attr('d',fpLine(fpVis));
       const fpLast=fpVis[fpVis.length-1];
       fp.curDot.attr('cx',fp.xs(fpLast.date)).attr('cy',fp.ys(fpLast.max1rm)).attr('opacity',1);
-      if(fpLast.max1rm>(prLog[fp.ex]||0)&&prLog[fp.ex]>0){
-        fp.prStar.attr('x',fp.xs(fpLast.date)).attr('y',fp.ys(fpLast.max1rm)-12).attr('opacity',1);
+      // Use newPRs to check — prLog is already updated by main loop so comparison would always fail
+      const fpHasPR=newPRs.some(pr=>pr.ex===fp.ex);
+      if(fpHasPR){
+        fp.prStar.attr('x',fp.xs(fpLast.date)).attr('y',fp.ys(fpLast.max1rm)-14).attr('opacity',1);
+        fp.prStar.transition().duration(300).attr('opacity',1).transition().duration(300).attr('opacity',.4).transition().duration(300).attr('opacity',1);
       } else {fp.prStar.attr('opacity',0);}
     } else {fp.animPath.attr('d','');fp.curDot.attr('opacity',0);fp.prStar.attr('opacity',0);}
   }
