@@ -1021,7 +1021,34 @@ function attachAxisTooltips(){
     }
   });
 }
-// Run after all charts are built — short delay ensures all SVGs are in DOM
+// Event delegation — catches axis labels in dynamically rebuilt charts too
+document.addEventListener('mouseover', e=>{
+  const el=e.target;
+  if(el.tagName==='text' && el.closest('svg')){
+    const txt=el.textContent.trim();
+    const def=AXIS_DEFS[txt];
+    if(def){
+      el.style.fill='#4fc3f7';
+      el.style.cursor='help';
+    }
+  }
+});
+document.addEventListener('mousemove', e=>{
+  const el=e.target;
+  if(el.tagName==='text' && el.closest('svg')){
+    const txt=el.textContent.trim();
+    const def=AXIS_DEFS[txt];
+    if(def){showTip(def,e);}
+  }
+});
+document.addEventListener('mouseout', e=>{
+  const el=e.target;
+  if(el.tagName==='text' && el.closest('svg')){
+    const txt=el.textContent.trim();
+    if(AXIS_DEFS[txt]) hideTip();
+  }
+});
+// Still run once to highlight existing elements on load
 setTimeout(attachAxisTooltips, 800);
 </script>
 </body>
