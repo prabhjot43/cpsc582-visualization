@@ -293,7 +293,7 @@
     </div>
     <div class="wi-row">
       <span class="wi-label">Weeks ahead:</span>
-      <input type="range" id="weeks-ahead-slider" min="1" max="24" value="4" oninput="updateWhatIf()"/>
+      <input type="range" id="weeks-ahead-slider" min="1" max="12" value="4" oninput="updateWhatIf()"/>
       <span id="wi-weeks-label" style="color:#ff9800;font-weight:600;min-width:60px;">4 weeks</span>
     </div>
     <div id="wi-result">—</div>
@@ -302,7 +302,7 @@
     <div class="chart-title" id="whatif-title">Projection Chart</div>
     <div id="whatif-chart"></div>
   </div>
-  <div class="insight-box"><strong>Note:</strong> Projections assume your linear trend continues unchanged. Real-world strength gains slow down over time — treat this as an optimistic upper bound, not a guarantee.</div>
+  <div class="insight-box"><strong>Note:</strong> Projections use a diminishing returns model — each week's predicted gain is 7% smaller than the last, reflecting how strength adaptations slow over time. Real results depend on consistency, recovery, and programming.</div>
 </section>
 
 <!-- COMPARISON MODE -->
@@ -660,29 +660,36 @@ function updateWhatIf(){
   document.getElementById('wi-weeks-label').textContent=weeksAhead+' week'+(weeksAhead===1?'':'s');
   const bd=allByDate[ex];
   const [slope,intercept]=linReg(bd.map((_,i)=>i),bd.map(d=>d.max1rm));
-  const projectedIdx=bd.length-1+weeksAhead*2; // ~2 sessions per week
-  const projectedVal=slope*projectedIdx+intercept;
   const currentVal=bd[bd.length-1].max1rm;
+
+  // Diminishing returns: each additional session contributes less (7% decay per session)
+  // More realistic than pure linear — strength gains slow over time
+  const decay=0.93;
+  const sessions=weeksAhead*2;
+  const totalGain=slope*((1-Math.pow(decay,sessions))/(1-decay));
+  const projectedVal=Math.max(currentVal,currentVal+totalGain);
   const gain=((projectedVal-currentVal)/currentVal*100).toFixed(1);
+
   document.getElementById('wi-result').innerHTML=
-    `In <strong>${weeksAhead} week${weeksAhead===1?'':'s'}</strong>, your estimated ${ex} 1RM could reach <strong style="color:#ff9800;font-size:1.3rem">${projectedVal.toFixed(0)} lbs</strong> — that's <strong style="color:#81c784">+${gain}%</strong> from your current ${currentVal.toFixed(0)} lbs.`;
+    `In <strong>${weeksAhead} week${weeksAhead===1?'':'s'}</strong>, your estimated ${ex} 1RM could reach <strong style="color:#ff9800;font-size:1.3rem">${projectedVal.toFixed(0)} lbs</strong> — roughly <strong style="color:#81c784">+${gain}%</strong> from your current ${currentVal.toFixed(0)} lbs. <span style="color:#484f58;font-size:11px">(diminishing returns applied — gains slow over time)</span>`;
   document.getElementById('whatif-title').textContent=`${ex} — Actual + ${weeksAhead}-Week Projection`;
 
-  // Draw chart
+  // Build projection points using diminishing returns per session
   const W=Math.min(860,window.innerWidth-80),H=260,M={top:20,right:30,bottom:44,left:58};
   d3.select('#whatif-chart').selectAll('*').remove();
   const svg=d3.select('#whatif-chart').append('svg').attr('width',W).attr('height',H);
   const color=wtypeMap[ex]==='Upper Body'?UPPER:LOWER;
 
-  // Build projection dates
   const lastDate=bd[bd.length-1].date;
   const projDates=[];
-  for(let i=1;i<=weeksAhead*2;i++){
+  let running=currentVal;
+  for(let i=1;i<=sessions;i++){
+    running+=slope*Math.pow(decay,i-1);
     const d=new Date(lastDate);d.setDate(d.getDate()+i*3.5);
-    projDates.push({date:d,val:slope*(bd.length-1+i)+intercept,projected:true});
+    projDates.push({date:d,val:Math.max(currentVal,running),projected:true});
   }
-  const allPts=[...bd.map((d,i)=>({date:d.date,val:d.max1rm,idx:i,projected:false})),...projDates.map((d,i)=>({...d,idx:bd.length+i}))];
 
+  const allPts=[...bd.map(d=>({date:d.date,val:d.max1rm})),...projDates];
   const x=d3.scaleTime().domain(d3.extent(allPts,d=>d.date)).range([M.left,W-M.right]);
   const y=d3.scaleLinear().domain([d3.min(allPts,d=>d.val)*0.95,d3.max(allPts,d=>d.val)*1.05]).range([H-M.bottom,M.top]);
 
@@ -696,8 +703,8 @@ function updateWhatIf(){
   svg.append('path').datum(bd).attr('fill','none').attr('stroke',color).attr('stroke-width',2.5).attr('d',lineAct);
   svg.selectAll('circle.act').data(bd).join('circle').attr('class','act').attr('cx',d=>x(d.date)).attr('cy',d=>y(d.max1rm)).attr('r',4).attr('fill',color).on('mousemove',(e,d)=>showTip(`<strong>${ex}</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Actual: ${d.max1rm.toFixed(0)} lbs`,e)).on('mouseleave',hideTip);
 
-  // Projection line
-  const linePts=[{date:lastDate,val:bd[bd.length-1].max1rm},...projDates];
+  // Projection line (curved, flattening)
+  const linePts=[{date:lastDate,val:currentVal},...projDates];
   const lineProj=d3.line().x(d=>x(d.date)).y(d=>y(d.val)).curve(d3.curveMonotoneX);
   svg.append('path').datum(linePts).attr('fill','none').attr('stroke',ORANGE).attr('stroke-width',2).attr('stroke-dasharray','6,4').attr('d',lineProj);
   svg.selectAll('circle.proj').data(projDates).join('circle').attr('class','proj').attr('cx',d=>x(d.date)).attr('cy',d=>y(d.val)).attr('r',4).attr('fill',ORANGE).attr('opacity',.7).on('mousemove',(e,d)=>showTip(`<strong>${ex} (projected)</strong><br>${d3.timeFormat('%b %d')(d.date)}<br>Projected: ${d.val.toFixed(0)} lbs`,e)).on('mouseleave',hideTip);
@@ -708,9 +715,9 @@ function updateWhatIf(){
 
   // Legend
   const lg=svg.append('g').attr('transform',`translate(${M.left},${M.top})`);
-  [[color,'Actual'],[ORANGE,'Projected (trend)']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*150).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*150+10).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
+  [[color,'Actual'],[ORANGE,'Projected (diminishing returns)']].forEach(([c,t],i)=>{lg.append('circle').attr('cx',i*180).attr('r',5).attr('fill',c);lg.append('text').attr('x',i*180+10).attr('y',4).attr('fill','#8b949e').attr('font-size',11).text(t);});
 
-  // Divider line
+  // Today divider
   svg.append('line').attr('x1',x(lastDate)).attr('x2',x(lastDate)).attr('y1',M.top).attr('y2',H-M.bottom).attr('stroke','#fff').attr('stroke-width',1).attr('stroke-dasharray','3,3').attr('opacity',.3);
   svg.append('text').attr('x',x(lastDate)+4).attr('y',M.top+10).attr('fill','#fff').attr('font-size',9).attr('opacity',.5).text('Today');
 }
